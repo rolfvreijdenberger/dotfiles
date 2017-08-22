@@ -1,0 +1,208 @@
+" .vimrc with customized settings, plugins and mappings
+
+" GENERIC SETTINGS
+" status information and other helpful displays
+" colors are set after the plugins have loaded
+" the colorized statusline conveys a lot of information. see :help statusline
+set nocompatible
+set history=50
+" the next statusline is replaced by vim-airline plugin
+"set statusline=%F%#important#%m%*%r\ %h%y\ line:%02l/%L(%p%%)\ col:%02c\ %=\ win:%{tabpagewinnr(tabpagenr())}\ tab:%{tabpagenr()}\ buf:%n\ reg:%{v:register}\ %#git#%{fugitive#statusline()}%*\ (%03b:0x%02B)\ %#hostname#%{hostname()}%* 
+syntax on
+set number
+set numberwidth=3
+set ruler
+set visualbell
+set laststatus=2
+set showcmd
+set shiftround
+set wrap
+set title
+set cursorline
+
+" search settings
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set showmatch
+set matchtime=3
+
+" file editing
+filetype on
+set autoread
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set autoindent
+
+" autocompletion
+set wildmenu
+set wildmode=list:longest,full
+
+"add to search path for finding files
+set path+=~/Documents/**
+
+" mouse support
+set mouse=a
+
+" more sane window splitting
+set splitbelow
+set splitright
+
+
+" END GENERIC SETTINGS
+
+
+" MAPPINGS 
+" https://superuser.com/questions/693528/vim-is-there-a-downside-to-using-space-as-your-leader-key
+let mapleader="\\"
+nmap  <space> \
+set timeoutlen=2500
+
+" do not allow use of arrow keys
+nmap <Left> :echo "use h"<CR>
+nmap <Right> :echo "use l"<CR>
+nmap <Up> :echo "use k"<CR>
+nmap <Down> :echo "use j"<CR>
+
+" Vimrc file Sourcing after changes, to take immediate effect
+nmap  <leader>vs :source $MYVIMRC<CR>
+" Vimrc file Edit 
+nmap <leader>ve :e $MYVIMRC<CR>
+
+" Window switching (normally all window operations start with <C-w>) with a
+" count
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_2)#Supplying_a_count_to_a_map
+nmap  <leader>wh :<C-U>exe v:count1 . "wincmd h"<CR>
+nmap  <leader>wj :wincmd j<CR>
+nmap  <leader>wk :wincmd k<CR>
+nmap  <leader>wl :<C-U>exe v:count1 . "wincmd l"<CR>
+nmap  <leader>ww :<C-U>exe v:count1 . "wincmd w"<CR>
+
+" Resizing of windows (normally all window operations start with <C-w>)
+nmap  <leader>rh :vertical resize -10<CR>
+nmap  <leader>rj :resize -6<CR>
+nmap  <leader>rk :resize +6<CR>
+nmap  <leader>rl :vertical resize +10<CR>
+
+" Relative Resizing of windows (normally all window operations start with <C-w>) 
+nnoremap  <leader>rrh :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
+nnoremap  <leader>rrk :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap  <leader>rrj :exe "resize " . (winheight(0) * 2/3)<CR>
+nnoremap  <leader>rrl :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
+
+" Nerdtree mappings
+nmap <leader>ne : NERDTree<CR>
+nmap <leader>nt : NERDTreeToggle<CR>
+nmap <leader>nf : NERDTreeFocus<CR>
+nmap <leader>nc : NERDTreeClose<CR>
+nmap <leader>nq : NERDTreeClose<CR>
+
+" Tagbar mappings
+nmap  <leader>te : Tagbar<CR>
+nmap  <leader>tt : Tagbar<CR>
+nmap  <leader>tc : TagbarClose<CR>
+nmap  <leader>tq : TagbarClose<CR>
+
+" END MAPPINGS 
+
+
+
+
+
+
+" PLUGINS 
+
+" PRE PLUGIN MANAGER INSTALLATION
+" vim-plug:https://github.com/junegunn/vim-plug
+" central installation managed via .vimrc only. preferred above vundle and pathogen
+if empty(glob('~/.vim/autoload/plug.vim'))
+        silent !curl -s -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+" LOAD PLUGINS
+call plug#begin()
+" for installation of new ones: ':PlugInstall'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'tpope/vim-surround'
+Plug 'vim-syntastic/syntastic'
+Plug 'https://github.com/tpope/vim-fugitive'
+Plug 'ap/vim-css-color'
+Plug 'junegunn/goyo.vim'
+Plug 'pangloss/vim-javascript'
+Plug 'leshill/vim-json'
+Plug 'SirVer/ultisnips'
+" you need to have ctags installed
+" https://ricostacruz.com/til/navigate-code-with-ctags
+Plug 'majutsushi/tagbar'
+Plug 'vim-php/tagbar-phpctags.vim'
+Plug 'craigemery/vim-autotag'
+Plug 'guns/xterm-color-table.vim'
+Plug 'kshenoy/vim-signature'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+" Plug 'edkolev/tmuxline.vim'
+" fuzzy finding
+Plug 'ctrlpvim/ctrlp.vim'
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plug 'junegunn/fzf.vim'
+call plug#end()
+
+" PLUGIN NERDTREE
+" autostart the nerdtree
+autocmd vimenter * NERDTree
+" and then put focus on the previous (last accessed) window
+autocmd VimEnter * wincmd p
+let NERDTreeShowBookmarks=1
+" PLUGIN SYNTASTIC
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
+" END PLUGINS 
+
+" COLOR ADJUSTMENTS. after the plugins have loaded
+" http://vim.wikia.com/wiki/Xterm256_color_names_for_console_Vim
+" colorscheme murphy 
+" statusline for the active and inactive windows
+" highlight StatusLine cterm=bold,reverse ctermfg=green ctermbg=black
+" highlight StatusLineNC ctermfg=yellow ctermbg=8     
+" formats for highlights used in statusline
+"highlight important   term=inverse,bold cterm=inverse,bold ctermfg=yellow
+" highlight git         term=inverse cterm=inverse,bold ctermfg=220
+" highlight hostname    term=inverse cterm=inverse,bold ctermfg=38
+
+" set statusline=%F%#important#%m%*%r\ %h%y\ line:%02l/%L(%p%%)\ col:%02c\ %=\ win:%{tabpagewinnr(tabpagenr())}\ tab:%{tabpagenr()}\ buf:%n\ reg:%{v:register}\ %#git#%{fugitive#statusline()}%*\ (%03b:0x%02B)\ %#hostname#%{hostname()}%* 
+ if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+  endif
+
+  " unicode symbols
+" let g:airline_left_sep = '»'
+" let g:airline_left_sep = '▶'
+" let g:airline_right_sep = '«'
+" let g:airline_right_sep = '◀'
+" let g:airline_symbols.crypt = '🔒'
+" let g:airline_symbols.linenr = '☰'
+" let g:airline_symbols.linenr = '␊'
+" let g:airline_symbols.linenr = '␤'
+" let g:airline_symbols.linenr = '¶'
+" let g:airline_symbols.maxlinenr = ''
+" let g:airline_symbols.maxlinenr = '㏑'
+" let g:airline_symbols.branch = '⎇'
+" let g:airline_symbols.paste = 'ρ'
+" let g:airline_symbols.paste = 'Þ'
+" let g:airline_symbols.paste = '∥'
+" let g:airline_symbols.spell = 'Ꞩ'
+" let g:airline_symbols.notexists = '∄'
+" let g:airline_symbols.whitespace = 'Ξ'
+let g:airline_section_z ='%h%y line:%02l/%L(%p%%) col:%02c win:%{tabpagewinnr(tabpagenr())} tab:%{tabpagenr()} buf:%n reg:%{v:register}'
