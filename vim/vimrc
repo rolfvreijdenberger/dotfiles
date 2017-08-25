@@ -36,13 +36,11 @@ set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set autoindent
+set smartindent
 
 " autocompletion
 set wildmenu
 set wildmode=list:longest,full
-
-"add to search path for finding files
-set path+=~/Documents/**
 
 " mouse support
 set mouse=a
@@ -137,20 +135,20 @@ Plug 'junegunn/goyo.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'leshill/vim-json'
 Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+"Plug 'Valloric/YouCompleteMe'
 " you need to have ctags installed
 " https://ricostacruz.com/til/navigate-code-with-ctags
 Plug 'majutsushi/tagbar'
 Plug 'vim-php/tagbar-phpctags.vim'
 Plug 'craigemery/vim-autotag'
-Plug 'guns/xterm-color-table.vim'
 Plug 'kshenoy/vim-signature'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-" Plug 'edkolev/tmuxline.vim'
 " fuzzy finding
 Plug 'ctrlpvim/ctrlp.vim'
-" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-" Plug 'junegunn/fzf.vim'
+Plug 'lumiliet/vim-twig'
+Plug 'modille/groovy.vim'
 call plug#end()
 
 " PLUGIN NERDTREE
@@ -159,6 +157,15 @@ autocmd vimenter * NERDTree
 " and then put focus on the previous (last accessed) window
 autocmd VimEnter * wincmd p
 let NERDTreeShowBookmarks=1
+" PLUGIN ultisnips
+" Trigger configuration. Do not use <tab> if you use
+" https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 " PLUGIN SYNTASTIC
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -168,6 +175,12 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
+" PLUGIN ctrl-p
+if executable('ag')
+  set grepprg=ag\ --nogroup\ --nocolor
+  let g:ctrlp_user_command = 'ag %s -l --nocolor  --hidden -g ""'
+  let g:ctrlp_use_caching = 0
+endif
 " END PLUGINS 
 
 " COLOR ADJUSTMENTS. after the plugins have loaded
