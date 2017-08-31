@@ -1,0 +1,37 @@
+/* https://www.computerhope.com/unix/uctags.htm */
+--langdef=ansible
+--langmap=ansible:.yml.yaml
+--regex-ansible=/^[ \t]*-[ \t]*name:[ \t]*(.+)/\1/k,tasks/
+--languages=+ansible
+
+
+--langdef=groovy
+--langmap=groovy:.groovy
+--regex-groovy=/^[ \t]*[(static|private|public|protected) \t]*(def|[A-Za-z0-9_.]+)[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\2/f,function,functions/
+--regex-groovy=/^[ \t]*private def[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/v,private,private variables/
+--regex-groovy=/^[ \t]*public def[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/u,public,public variables/
+--regex-groovy=/^[ \t]*[abstract ( \t)]*[(private|public) ( \t)]*class[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/c,class,classes/
+--regex-groovy=/^[ \t]*[abstract ( \t)]*[(private|public) ( \t)]*enum[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/c,class,classes/
+--languages=+groovy
+
+--langdef=ant
+--langmap=ant:.xml
+--regex-ant=/^[ \t]*<[ \t]*project.*name="([a-zA-Z0-9 ]+)".*>/\1/p,project/i
+--regex-ant=/^[ \t]*<[ \t]*target.*name="([a-zA-Z0-9 ]+)".*>/\1/t,target/i
+--Ant-kinds=+pt
+
+--PHP-kinds=+cf
+--languages=+php,javascript,ruby,groovy
+--langmap=php:.inc.php
+
+
+--recurse=yes
+--tag-relative=yes
+--exclude=.git
+--fields=+aimS
+--file-scope=no
+
+
+
+
+
