@@ -141,7 +141,8 @@ Plug 'junegunn/goyo.vim'
 " javascript 
 Plug 'pangloss/vim-javascript'
 " json 
-Plug 'leshill/vim-json'
+"Plug 'leshill/vim-json'
+Plug 'elzr/vim-json'
 " snippets engine
 Plug 'SirVer/ultisnips'
 " snippets library
@@ -153,6 +154,8 @@ Plug 'honza/vim-snippets'
 Plug 'majutsushi/tagbar'
 " tags for php
 Plug 'vim-php/tagbar-phpctags.vim'
+" php syntax file
+Plug 'stanangeloff/php.vim'
 "optimizer for ctags update
 Plug 'craigemery/vim-autotag'
 " display,toggle and navigate marks
