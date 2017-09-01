@@ -151,6 +151,7 @@ Plug 'lumiliet/vim-twig'
 Plug 'modille/groovy.vim'
 Plug 'tpope/vim-commentary'
 Plug 'pearofducks/ansible-vim'
+Plug 'ervandew/supertab'
 call plug#end()
 " PLUGINtagbar
 let g:tagbar_autofocus = 1
