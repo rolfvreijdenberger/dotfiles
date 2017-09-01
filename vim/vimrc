@@ -20,7 +20,9 @@ set title
 set cursorline
 
 " search settings
-set hlsearch
+set hlsearch 
+highlight Search cterm=NONE ctermfg=grey ctermbg=blue
+highlight Search guibg=peru guifg=wheat
 set incsearch
 set ignorecase
 set smartcase
@@ -36,6 +38,8 @@ set shiftwidth=2
 set softtabstop=2
 set autoindent
 set smartindent
+set colorcolumn=80
+highlight ColorColumn ctermfg=grey ctermbg=black
 
 " autocompletion
 set wildmenu
@@ -185,12 +189,15 @@ let g:tagbar_autoclose = 1
 let g:tagbar_type_groovy = {
       \ 'ctagstype' : 'groovy',
       \ 'kinds'     : [
-      \ 'p:package:1',
+      \ 'p:package:1:0',
       \ 'c:classes',
       \ 'i:interfaces',
       \ 't:traits',
       \ 'e:enums',
-      \ 'm:methods:1',
+      \ 'm:methods+',
+      \ 'x:methods#',
+      \ 'y:methods-',
+      \ 'z:methods?',
       \ 'f:fields'
       \ ]
       \ }

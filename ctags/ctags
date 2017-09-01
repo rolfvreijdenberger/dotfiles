@@ -8,47 +8,48 @@
 --languages=+ansible
 
 
---regex-C=/$x/x/x/e/ TODO: these regexes suck. review and improve
+
 
 --langdef=groovy
 --langmap=groovy:.groovy
---regex-groovy=/^[ \t]*package[ \t]+([a-zA-Z0-9.-_]+)/\1/p,package/
---regex-groovy=/^[ \t]*(private|public)?[ \t]*(abstract|final|static)?[ \t]*class[ \t]+([A-Za-z0-9_]+)/\3/c,class/
---regex-groovy=/^[ \t]*(private|public)?[ \t]*interface[ \t]+([A-Za-z0-9_]+)/\2/i,interface/
---regex-groovy=/^[ \t]*(private|public)?[ \t]*trait[ \t]+([A-Za-z0-9_]+)/\2/t,trait/
---regex-groovy=/^[ \t]*(private|public)?[ \t]*enum[ \t]+([A-Za-z0-9_]+)/\2/e,enum/
---regex-groovy=/^[ \t]*[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/~\3/m,package method/
---regex-groovy=/^[ \t]*public[ \t]+[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/+\3/m,public method/
---regex-groovy=/^[ \t]*protected[ \t]+[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/#\3/m,protected method/
---regex-groovy=/^[ \t]*private[ \t]+[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/-\3/m,private method/
---regex-groovy=/^[ \t]*[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][A-Za-z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/~\2/f,property/
---regex-groovy=/^[ \t]*public[ \t]+[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/+\2/f,public field/
---regex-groovy=/^[ \t]*protected[ \t]+[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/#\2/f,protected field/
---regex-groovy=/^[ \t]*private[ \t]+[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/-\2/f,private field/
+--regex-C=/$x/x/x/e/ TODO: these regexes suck. review and improve
+--regex-groovy=/^\s*package\s+([a-zA-Z0-9.-_]+)/\1/p,package/
+--regex-groovy=/^\s*(private|public)?\s*(abstract|final|static)?\s*(private|public)?\s*class\s+([A-Za-z0-9_]+)/\4/c,class/
+--regex-groovy=/^\s*(private|public)?\s*interface\s+(private|public)?\s*([A-Za-z0-9_]+)/\3/i,interface/
+--regex-groovy=/^\s*(private|public)?\s*trait\s+([A-Za-z0-9_]+)/\2/t,trait/
+--regex-groovy=/^\s*(private|public)?\s*enum\s+([A-Za-z0-9_]+)/\2/e,enum/
+
+--regex-C=/$x/x/x/e/ trickY: to only get class members we assume either a tab or at most 4 spaces --regex-groovy=/^(([\t]{1,1})|([ ]{0,4}))((abstract|final|static)\s*)?((public|private|protected)\s*)?(([a-zA-Z])*\s?)?(\w+)(\s*|\s*(=\s*([0-9]*|['"].*?["']|true|false|null))?\s*)s*;?\s*(\/\/.*)?\s*$/\10/f,property/
 
 
+
+--regex-C=/$x/x/x/e/ these regexes suck not. tested via regexr.com
+--regex-groovy=/^\s*(abstract|final|static)?\s*public\s*(abstract|final|static)?\s*(([a-z]*|void|[A-Z][a-zA-Z0-9_]*)?)?\s([a-zA-Z0-9_]+)\s*\(.*?\)\s*(\{)?\s*(\/\/.*)?\s*$/\5/m,public method/
+--regex-groovy=/^\s*(abstract|final|static)?\s*protected\s*(abstract|final|static)?\s*(([a-z]*|void|[A-Z][a-zA-Z0-9_]*)?)?\s([a-zA-Z0-9_]+)\s*\(.*?\)\s*(\{)?\s*(\/\/.*)?\s*$/\5/x,protected method/
+--regex-groovy=/^\s*(abstract|final|static)?\s*private\s*(abstract|final|static)?\s*(([a-z]*|void|[A-Z][a-zA-Z0-9_]*)?)?\s([a-zA-Z0-9_]+)\s*\(.*?\)\s*(\{)?\s*(\/\/.*)?\s*$/\5/y,private method/
+--regex-groovy=/^\s*(abstract|final|static)+\s*(([a-z]*|void|[A-Z][a-zA-Z0-9_]*)?\s+)?([a-zA-Z0-9_]+)\s*\(.*\)\s*(\{)?\s*(\/\/.*)?\s*$/~\4/z,package method/
 
 
 
 --langdef=actionscript
 --langmap=actionscript:.as
---regex-actionscript=/^[ \t]*[(private|public) ( \t)]*function[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\1/f,function,functions/
---regex-actionscript=/^[ \t]*public function (set|get)[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\1 \2/p,property,properties/
---regex-actionscript=/^[ \t]*private var[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/v,private,private variables/
---regex-actionscript=/^[ \t]*public var[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/u,public,public variables/
---regex-actionscript=/.*\.prototype \.([A-Za-z0-9 ]+)=([ \t]?)function( [ \t]?)*\(/\1/f,prototype,prototype functions/
---regex-actionscript=/^[ \t]*class[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/c,class,classes/
+--regex-actionscript=/^\s*[(private|public) ( \t)]*function\s+([A-Za-z0-9_]+)\s*\(/\1/f,function,functions/
+--regex-actionscript=/^\s*public function (set|get)\s+([A-Za-z0-9_]+)\s*\(/\1 \2/p,property,properties/
+--regex-actionscript=/^\s*private var\s+([A-Za-z0-9_]+)\s*/\1/v,private,private variables/
+--regex-actionscript=/^\s*public var\s+([A-Za-z0-9_]+)\s*/\1/u,public,public variables/
+--regex-actionscript=/.*\.prototype \.([A-Za-z0-9 ]+)=(\s?)function( \s?)*\(/\1/f,prototype,prototype functions/
+--regex-actionscript=/^\s*class\s+([A-Za-z0-9_]+)\s*/\1/c,class,classes/
 --languages=+actionscript
 
 
 
 --langdef=js
 --langmap=js:.js
---regex-JavaScript=/([A-Za-z0-9._$]+)[ \t]*[:=][ \t]*\{/\1/o,object/
---regex-JavaScript=/([A-Za-z0-9._$'"()]+)[ \t]*[:][ \t]*function[ \t]*\([^)]*\)/\1/f,function/
---regex-JavaScript=/([A-Za-z0-9._$]+)[ \t]*[:=][ \t]*\[/\1/a,array/
---regex-JavaScript=/([^= ]+)[ \t]*=[ \t]*'[^']*'/\1/s,string/
---regex-JavaScript=/([^= ]+)[ \t]*=[ \t]*"[^"]*"/\1/s,string/
+--regex-JavaScript=/([A-Za-z0-9._$]+)\s*[:=]\s*\{/\1/o,object/
+--regex-JavaScript=/([A-Za-z0-9._$'"()]+)\s*[:]\s*function\s*\([^)]*\)/\1/f,function/
+--regex-JavaScript=/([A-Za-z0-9._$]+)\s*[:=]\s*\[/\1/a,array/
+--regex-JavaScript=/([^= ]+)\s*=\s*'[^']*'/\1/s,string/
+--regex-JavaScript=/([^= ]+)\s*=\s*"[^"]*"/\1/s,string/
 --languages=+javascript
 
 
