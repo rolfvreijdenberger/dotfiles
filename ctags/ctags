@@ -1,28 +1,60 @@
-/* https://www.computerhope.com/unix/uctags.htm */
+--regex-C=/$x/x/x/e/ https://www.computerhope.com/unix/uctags.htm
+--regex-C=/$x/x/x/e/ https://andrew.stwrt.ca/posts/vim-ctags/
+
+
 --langdef=ansible
 --langmap=ansible:.yml.yaml
---regex-ansible=/^[ \t]*-[ \t]*name:[ \t]*(.+)/\1/k,tasks/
+--regex-ansible=/^\s*- name:(.*)/\1/t,task/
 --languages=+ansible
 
 
+--regex-C=/$x/x/x/e/ TODO: these regexes suck. review and improve
+
 --langdef=groovy
 --langmap=groovy:.groovy
---regex-groovy=/^[ \t]*[(static|private|public|protected) \t]*(def|[A-Za-z0-9_.]+)[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\2/f,function,functions/
---regex-groovy=/^[ \t]*private def[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/v,private,private variables/
---regex-groovy=/^[ \t]*public def[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/u,public,public variables/
---regex-groovy=/^[ \t]*[abstract ( \t)]*[(private|public) ( \t)]*class[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/c,class,classes/
---regex-groovy=/^[ \t]*[abstract ( \t)]*[(private|public) ( \t)]*enum[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/c,class,classes/
---languages=+groovy
+--regex-groovy=/^[ \t]*package[ \t]+([a-zA-Z0-9.-_]+)/\1/p,package/
+--regex-groovy=/^[ \t]*(private|public)?[ \t]*(abstract|final|static)?[ \t]*class[ \t]+([A-Za-z0-9_]+)/\3/c,class/
+--regex-groovy=/^[ \t]*(private|public)?[ \t]*interface[ \t]+([A-Za-z0-9_]+)/\2/i,interface/
+--regex-groovy=/^[ \t]*(private|public)?[ \t]*trait[ \t]+([A-Za-z0-9_]+)/\2/t,trait/
+--regex-groovy=/^[ \t]*(private|public)?[ \t]*enum[ \t]+([A-Za-z0-9_]+)/\2/e,enum/
+--regex-groovy=/^[ \t]*[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/~\3/m,package method/
+--regex-groovy=/^[ \t]*public[ \t]+[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/+\3/m,public method/
+--regex-groovy=/^[ \t]*protected[ \t]+[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/#\3/m,protected method/
+--regex-groovy=/^[ \t]*private[ \t]+[(abstract|final|static) \t]*((def|void|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+)?([a-zA-Z0-9_]+\(.*\))[ \t]+/-\3/m,private method/
+--regex-groovy=/^[ \t]*[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][A-Za-z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/~\2/f,property/
+--regex-groovy=/^[ \t]*public[ \t]+[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/+\2/f,public field/
+--regex-groovy=/^[ \t]*protected[ \t]+[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/#\2/f,protected field/
+--regex-groovy=/^[ \t]*private[ \t]+[(final|static|synchronized) \t]*(def|byte|int|short|long|float|double|boolean|char|[A-Z][a-zA-Z0-9_]*)[ \t]+([a-zA-Z0-9_]+)([ \t]*[\/]+.*)?/-\2/f,private field/
 
---langdef=ant
---langmap=ant:.xml
---regex-ant=/^[ \t]*<[ \t]*project.*name="([a-zA-Z0-9 ]+)".*>/\1/p,project/i
---regex-ant=/^[ \t]*<[ \t]*target.*name="([a-zA-Z0-9 ]+)".*>/\1/t,target/i
---Ant-kinds=+pt
 
---PHP-kinds=+cf
---languages=+php,javascript,ruby,groovy
+
+
+
+--langdef=actionscript
+--langmap=actionscript:.as
+--regex-actionscript=/^[ \t]*[(private|public) ( \t)]*function[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\1/f,function,functions/
+--regex-actionscript=/^[ \t]*public function (set|get)[ \t]+([A-Za-z0-9_]+)[ \t]*\(/\1 \2/p,property,properties/
+--regex-actionscript=/^[ \t]*private var[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/v,private,private variables/
+--regex-actionscript=/^[ \t]*public var[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/u,public,public variables/
+--regex-actionscript=/.*\.prototype \.([A-Za-z0-9 ]+)=([ \t]?)function( [ \t]?)*\(/\1/f,prototype,prototype functions/
+--regex-actionscript=/^[ \t]*class[ \t]+([A-Za-z0-9_]+)[ \t]*/\1/c,class,classes/
+--languages=+actionscript
+
+
+
+--langdef=js
+--langmap=js:.js
+--regex-JavaScript=/([A-Za-z0-9._$]+)[ \t]*[:=][ \t]*\{/\1/o,object/
+--regex-JavaScript=/([A-Za-z0-9._$'"()]+)[ \t]*[:][ \t]*function[ \t]*\([^)]*\)/\1/f,function/
+--regex-JavaScript=/([A-Za-z0-9._$]+)[ \t]*[:=][ \t]*\[/\1/a,array/
+--regex-JavaScript=/([^= ]+)[ \t]*=[ \t]*'[^']*'/\1/s,string/
+--regex-JavaScript=/([^= ]+)[ \t]*=[ \t]*"[^"]*"/\1/s,string/
+--languages=+javascript
+
+
 --langmap=php:.inc.php
+--PHP-kinds=+cf-v
+--languages=+php
 
 
 --recurse=yes

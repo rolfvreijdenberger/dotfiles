@@ -99,10 +99,10 @@ nmap <leader>nq : NERDTreeClose<CR>
 
 " Tagbar mappings
 nmap  <leader>te : Tagbar<CR>
-nmap  <leader>tt : Tagbar<CR>
+nmap  <leader>tt : TagbarToggle<CR>
 nmap  <leader>tc : TagbarClose<CR>
 nmap  <leader>tq : TagbarClose<CR>
-
+nmap <F8> :TagbarToggle<CR>
 " END MAPPINGS 
 
 
@@ -150,8 +150,31 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'lumiliet/vim-twig'
 Plug 'modille/groovy.vim'
 Plug 'tpope/vim-commentary'
+Plug 'pearofducks/ansible-vim'
 call plug#end()
+" PLUGINtagbar
+let g:tagbar_autofocus = 1
+let g:tagbar_autoclose = 1
+let g:tagbar_type_groovy = {
+      \ 'ctagstype' : 'groovy',
+      \ 'kinds'     : [
+      \ 'p:package:1',
+      \ 'c:classes',
+      \ 'i:interfaces',
+      \ 't:traits',
+      \ 'e:enums',
+      \ 'm:methods:1',
+      \ 'f:fields'
+      \ ]
+      \ }
 
+let g:tagbar_type_ansible = {
+      \ 'ctagstype' : 'ansible',
+      \ 'kinds' : [
+      \ 't:tasks:1'
+      \ ],
+      \ 'sort' : 0
+      \ }
 " PLUGIN NERDTREE
 " autostart the nerdtree
 " autocmd vimenter * NERDTree
@@ -164,14 +187,14 @@ let NERDTreeShowBookmarks=1
        \ 'active': {
        \   'left': [ [ 'mode', 'paste' ],
        \             [ 'readonly', 'filename', 'modified', 'gitbranch','wintabbuf'] ]
-      \,   'right': [ [ 'lineinfo' ],
-            \              [ 'percent' ],
-            \              [ 'fileformat', 'fileencoding', 'filetype'] ]
-            \
+       \,   'right': [ [ 'lineinfo' ],
+       \              [ 'percent' ],
+       \              [ 'fileformat', 'fileencoding', 'filetype'] ]
+       \
        \ },
-      \ 'component': {
-      \ 'wintabbuf' : 'w%{tabpagewinnr(tabpagenr())}t%{tabpagenr()}b%n'
-      \ },
+       \ 'component': {
+       \ 'wintabbuf' : 'w%{tabpagewinnr(tabpagenr())}t%{tabpagenr()}b%n'
+       \ },
        \ 'component_function': {
        \   'gitbranch': 'fugitive#head'
        \ },
