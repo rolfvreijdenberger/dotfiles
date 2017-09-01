@@ -124,34 +124,55 @@ endif
 " LOAD PLUGINS
 call plug#begin()
 " for installation of new ones: ':PlugInstall'
+" nerdtree file explorer
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+" jinja2 syntax for ansible templates
 Plug 'Glench/Vim-Jinja2-Syntax'
+" surround text with quotes
 Plug 'tpope/vim-surround'
+" syntax checker
 Plug 'vim-syntastic/syntastic'
+" git wrapper
 Plug 'https://github.com/tpope/vim-fugitive'
+" css color hightlighting
 Plug 'ap/vim-css-color'
+" only show text
 Plug 'junegunn/goyo.vim'
+" javascript 
 Plug 'pangloss/vim-javascript'
+" json 
 Plug 'leshill/vim-json'
+" snippets engine
 Plug 'SirVer/ultisnips'
+" snippets library
 Plug 'honza/vim-snippets'
 "Plug 'Valloric/YouCompleteMe'
 " you need to have ctags installed
 " https://ricostacruz.com/til/navigate-code-with-ctags
+" tagbar with code outline,
 Plug 'majutsushi/tagbar'
+" tags for php
 Plug 'vim-php/tagbar-phpctags.vim'
+"optimizer for ctags update
 Plug 'craigemery/vim-autotag'
+" display,toggle and navigate marks
 Plug 'kshenoy/vim-signature'
-" Plug 'vim-airline/vim-airline'
-" Plug 'vim-airline/vim-airline-themes'
+" vim theme (lightweight and good philosophy)
 Plug 'itchyny/lightline.vim'
 " fuzzy finding
 Plug 'ctrlpvim/ctrlp.vim'
+" tiwg template engine
 Plug 'lumiliet/vim-twig'
+" groovy syntax 
 Plug 'modille/groovy.vim'
+" use gcc to comment out/in lines
 Plug 'tpope/vim-commentary'
+" ansible highlighting and file detection
 Plug 'pearofducks/ansible-vim'
+" use 'tab' for autocompletion
 Plug 'ervandew/supertab'
+" use auto completion for quotes/brackets etc
+Plug 'Raimondi/delimitMate'
 call plug#end()
 " PLUGINtagbar
 let g:tagbar_autofocus = 1
