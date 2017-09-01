@@ -166,7 +166,9 @@ Plug 'lumiliet/vim-twig'
 " groovy syntax 
 Plug 'modille/groovy.vim'
 " use gcc to comment out/in lines
-Plug 'tpope/vim-commentary'
+" Plug 'tpope/vim-commentary'
+" comments 
+Plug 'scrooloose/nerdcommenter'
 " ansible highlighting and file detection
 Plug 'pearofducks/ansible-vim'
 " use 'tab' for autocompletion
