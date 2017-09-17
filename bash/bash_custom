@@ -1,0 +1,63 @@
+# sourced by ~/.bashrc
+
+# colors for less, useful in manpages
+export LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
+export LESS_TERMCAP_md=$(printf '\e[01;33m') # enter double-bright mode - bold, magenta
+export LESS_TERMCAP_me=$(printf '\e[0m') # turn off all appearance modes (mb, md, so, us)
+export LESS_TERMCAP_se=$(printf '\e[0m') # leave standout mode
+export LESS_TERMCAP_so=$(printf '\e[01;35m') # enter standout mode - yellow
+export LESS_TERMCAP_ue=$(printf '\e[0m') # leave underline mode
+export LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode - cyan
+
+# locale settings
+#export LC_ALL="en_GB.UTF-8"
+#export LANG="en_GB.UTF-8"
+
+# use vim for everything
+export VISUAL=vim
+export EDITOR=vim
+set -o vi
+
+# history settings for multipe terminals
+# see https://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
+export HISTSIZE=20000
+export HISTFILESIZE=$HISTSIZE
+export HISTCONTROL=ignoredups:erasedups
+export HISTTIMEFORMAT='%Y-%m-%d %H:%M.%S | '
+shopt -s histappend
+unset PROMPT_COMMAND
+_bash_history_sync() {
+  builtin history -a
+  HISTFILESIZE=$HISTSIZE
+  builtin history -c
+  builtin history -r
+}
+
+history() {
+  _bash_history_sync
+  builtin history "$@"
+}
+
+export PROMPT_COMMAND=_bash_history_sync
+
+# ls color options
+export LS_OPTIONS='--color=auto'
+#eval "`dircolors`"
+alias ls='ls -G'
+# bash shell prompt
+# http://bashrcgenerator.com/
+#export PS1="\u@\h [\w] \\$ \[$(tput sgr0)\]"
+#export PS1="\e[92m\u\e[0m\e[97m@\e[34m\h\e[0m [\e[33m\w\e[0m] \\$ \[$(tput sgr0)\]"
+
+function last_exit_status() {
+  last_status=$(echo $?)
+  if [ $last_status -ne 0 ]
+  then
+    last_status="\[\e[38;5;11m\]$last_status\[\e[m\]"
+  else
+    last_status="\[\e[32m\]$last_status\[\e[m\]"
+  fi
+  return $last_status
+}
+
+export PS1="\[\e[36m\]\u\[\e[m\]\[\e[31m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\][\[\e[33m\]\W\[\e[m\]]:\`last_exit_status\`\:\[\e[31m\]\\$ \[\e[m\] "

@@ -205,7 +205,7 @@ let g:tagbar_type_groovy = {
 let g:tagbar_type_ansible = {
       \ 'ctagstype' : 'ansible',
       \ 'kinds' : [
-      \ 't:tasks:1'
+      \ 't:tasks'
       \ ],
       \ 'sort' : 0
       \ }
