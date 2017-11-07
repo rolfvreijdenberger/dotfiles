@@ -51,13 +51,13 @@ alias ls='ls -G'
 
 function last_exit_status() {
   last_status=$(echo $?)
-  if [ $last_status -ne 0 ]
-  then
-    last_status="\[\e[38;5;11m\]$last_status\[\e[m\]"
-  else
-    last_status="\[\e[32m\]$last_status\[\e[m\]"
-  fi
   return $last_status
 }
 
-export PS1="\[\e[36m\]\u\[\e[m\]\[\e[31m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\][\[\e[33m\]\W\[\e[m\]]:\`last_exit_status\`\:\[\e[31m\]\\$ \[\e[m\] "
+export PS1="\[\e[36m\]\u\[\e[m\]\[\e[31m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\][\[\e[33m\]\W\[\e[m\]]:`last_exit_status`:\[\e[31m\]\\$ \[\e[m\] "
+
+# gpg agent for ssh authentication
+# https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html#Invoking-GPG_002dAGENT
+# export "GPG_TTY=$(tty)"
+# export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
+# eval $(keychain --eval --quiet)
