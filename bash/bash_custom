@@ -1,5 +1,10 @@
+#!/bin/bash
 # sourced by ~/.bashrc
 
+# ls color options
+export LS_OPTIONS='--color=auto'
+#eval "`dircolors`"
+alias ls='ls -G'
 # colors for less, useful in manpages
 export LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
 export LESS_TERMCAP_md=$(printf '\e[01;33m') # enter double-bright mode - bold, magenta
@@ -39,29 +44,44 @@ history() {
 
 export PROMPT_COMMAND=_bash_history_sync
 
-# ls color options
-export LS_OPTIONS='--color=auto'
-#eval "`dircolors`"
-alias ls='ls -G'
 # bash shell prompt
 # http://bashrcgenerator.com/
-#export PS1="\u@\h [\w] \\$ \[$(tput sgr0)\]"
-#export PS1="\e[92m\u\e[0m\e[97m@\e[34m\h\e[0m [\e[33m\w\e[0m] \\$ \[$(tput sgr0)\]"
-
 
 function last_exit_status() {
-  last_status=$?
-    if [ $last_status -eq 0 ]; then
-      echo -e "\e[32m"$last_status"\e[0m"
-    else
-      echo -e "\e[31;1m"$last_status"\e[0m"
-    fi
+last_status=$?
+if [ $last_status -eq 0 ]; then
+  echo -e "\e[32m"$last_status"\e[0m"
+else
+  echo -e "\e[31;1m"$last_status"\e[0m"
+fi
 }
-
 export PS1="\[\e[36m\]\u\[\e[m\]\[\e[31m\]@\[\e[m\]\[\e[36m\]\h\[\e[m\][\[\e[33m\]\W\[\e[m\]]:`last_exit_status`:\[\e[31m\]\\$ \[\e[m\] "
 
-# gpg agent for ssh authentication
-# https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html#Invoking-GPG_002dAGENT
-# export "GPG_TTY=$(tty)"
-# export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
-# eval $(keychain --eval --quiet)
+
+case "$OSTYPE" in
+  darwin*) #mac
+    # gpg agent for ssh authentication
+    # https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html#Invoking-GPG_002dAGENT
+    export "GPG_TTY=$(tty)"
+    export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
+    # eval $(gpg-agent --daemon --enable-ssh-support)
+    # eval $(keychain --eval --quiet)
+    ;;
+  linux*)
+    echo "LINUX"
+    ;;
+  bsd*)
+    echo "BSD"
+    ;;
+  *)
+    echo "unhandled os: $OSTYPE"
+    ;;
+esac
+
+# no longer needed for gpg 2.2
+if [ -f "${HOME}/.gpg-agent-info" ]; then
+  . "${HOME}/.gpg-agent-info"
+  export GPG_AGENT_INFO
+  export SSH_AUTH_SOCK
+fi
+
