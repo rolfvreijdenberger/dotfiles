@@ -16,7 +16,7 @@ set visualbell
 set laststatus=2
 set showcmd
 set shiftround
-set wrap
+set nowrap
 set title
 set cursorline
 
@@ -183,6 +183,8 @@ Plug 'pearofducks/ansible-vim'
 Plug 'ervandew/supertab'
 " use auto completion for quotes/brackets etc
 Plug 'Raimondi/delimitMate'
+" html
+Plug 'mattn/emmet-vim'
 call plug#end()
 " PLUGINtagbar
 let g:tagbar_autofocus = 1
