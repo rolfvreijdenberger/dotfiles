@@ -68,7 +68,8 @@ case "$OSTYPE" in
     # eval $(keychain --eval --quiet)
     ;;
   linux*)
-    echo "LINUX"
+    export "GPG_TTY=$(tty)"
+    export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
     ;;
   bsd*)
     echo "BSD"
@@ -89,4 +90,6 @@ fi
 
 
 alias myip='curl icanhazip.com/s'
+
+
 
