@@ -89,3 +89,4 @@ fi
 
 
 alias myip='curl icanhazip.com/s'
+
