@@ -85,3 +85,7 @@ if [ -f "${HOME}/.gpg-agent-info" ]; then
   export SSH_AUTH_SOCK
 fi
 
+
+
+
+alias myip='curl icanhazip.com/s'
