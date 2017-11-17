@@ -1,0 +1,13 @@
+[user]
+	name              = Rolf Vreijdenberger
+	email             = rolf@vreijdenberger.nl 
+[push]
+	default           = upstream
+[color]
+    ui = true
+[core]
+    editor         = vim
+[merge]
+    tool           = vimdiff
+[alias]
+    last           = !git --no-pager log -1 HEAD
