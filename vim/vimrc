@@ -9,6 +9,7 @@ set modelines=1
 set history=50
 syntax on
 set number
+set nolist
 set noshowmode
 set numberwidth=3
 set ruler
@@ -100,6 +101,8 @@ nmap  <leader>bn :bnext<CR>
 nmap  <leader>bp :bprevious<CR>
 nmap  <leader>bs :ls<CR>
 
+" toggle invisible character display
+nmap <leader>l :set list !<CR>
 
 " Nerdtree mappings
 nmap <leader>ne : NERDTree<CR>
