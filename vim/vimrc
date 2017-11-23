@@ -95,6 +95,12 @@ nnoremap  <leader>rrk :exe "resize " . (winheight(0) * 3/2)<CR>
 nnoremap  <leader>rrj :exe "resize " . (winheight(0) * 2/3)<CR>
 nnoremap  <leader>rrl :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
 
+" buffer handling
+nmap  <leader>bn :bnext<CR>
+nmap  <leader>bp :bprevious<CR>
+nmap  <leader>bs :ls<CR>
+
+
 " Nerdtree mappings
 nmap <leader>ne : NERDTree<CR>
 nmap <leader>nt : NERDTreeToggle<CR>
