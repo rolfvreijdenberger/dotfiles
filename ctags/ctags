@@ -1,3 +1,4 @@
+--regex-C=/$x/x/x/e/ license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
 --regex-C=/$x/x/x/e/ ~/.ctags
 --regex-C=/$x/x/x/e/ https://www.computerhope.com/unix/uctags.htm
 --regex-C=/$x/x/x/e/ https://andrew.stwrt.ca/posts/vim-ctags/

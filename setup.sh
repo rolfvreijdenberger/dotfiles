@@ -1,4 +1,5 @@
 #!/bin/bash
+# license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
 
 # sets up all dotfiles 
 
@@ -42,7 +43,7 @@ install ctags/ctags "$HOME/.ctags"
 install git/gitconfig "$HOME/.gitconfig"
 install gnupg/gpg.conf "$HOME/.gnupg/gpg.conf"
 install ssh/config "$HOME/.ssh/config"
-install tmux/tmux.conf "$HOME/.tmux.conf"
+install tmux/tmux-common.conf "$HOME/.tmux-common.conf"
 install vim/vimrc "$HOME/.vimrc"
 # all scripts in the bin folder
 for i in $(ls bin); do
@@ -55,14 +56,17 @@ case "$OSTYPE" in
   darwin*) #mac
     echo "mac specific setup"
     install gnupg/gpg-agent-mac.conf "$HOME/.gnupg/gpg-agent.conf"
-    mkdir -p /var/log/
-    touch /var/log/gpg-agent.log
+    touch "$HOME/.gnupg/gpg-agent.log"
+    install tmux/tmux-mac.conf "$HOME/.tmux.conf"
     ;;
   linux*)
     echo "linux specific setup"
     install gnupg/gpg-agent-linux.conf "$HOME/.gnupg/gpg-agent.conf"
-    mkdir -p /var/log/
-    touch /var/log/gpg-agent.log
+    touch "$HOME/.gnupg/gpg-agent.log"
+    # tmux settings
+    install tmux/tmux-linux.conf "$HOME/.tmux.conf"
+    # tmux copy/paste needs xclip
+    # sudo apt-get install --assume-yes xclip
     ;;
   bsd*)
     echo "bsd specific setup"

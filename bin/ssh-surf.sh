@@ -1,4 +1,5 @@
 #! /bin/bash
+# license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
 # create an ssh socks tunnen to proxy your internet traffic
 # point the broswer to port 8080 on localhost
 # see https://en.wikipedia.org/wiki/Tunneling_protocol

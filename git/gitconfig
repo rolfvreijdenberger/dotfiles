@@ -1,3 +1,4 @@
+# license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
 # ~/.gitconfig 
 [user]
 	name              = Rolf Vreijdenberger

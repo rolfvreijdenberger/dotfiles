@@ -1,4 +1,5 @@
 #!/bin/bash
+# license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
 # sourced by ~/.bashrc
 
 # ls color options
