@@ -43,6 +43,8 @@ install ctags/ctags "$HOME/.ctags"
 install git/gitconfig "$HOME/.gitconfig"
 install gnupg/gpg.conf "$HOME/.gnupg/gpg.conf"
 install ssh/config "$HOME/.ssh/config"
+# ssh/config includes everything from this directory
+mkdir -p  "$HOME/.ssh/config.d"
 install tmux/tmux-common.conf "$HOME/.tmux-common.conf"
 install vim/vimrc "$HOME/.vimrc"
 # all scripts in the bin folder

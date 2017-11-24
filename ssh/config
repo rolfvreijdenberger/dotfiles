@@ -1,5 +1,10 @@
+# license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
 # ~/.ssh/config
 # see man ssh_config
+
+# include all files in the ~/.ssh/config.d directory
+# needs ssh 7.3
+# Include config.d/* 
 
 Host phalanx
   Hostname sentinel.ddns.me
