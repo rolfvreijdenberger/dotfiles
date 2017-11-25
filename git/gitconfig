@@ -9,6 +9,7 @@
     ui = true
 [core]
     editor         = vim
+    pager          = less -R
 [merge]
     tool           = vimdiff
 [alias]
