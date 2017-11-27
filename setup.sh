@@ -12,9 +12,10 @@ set -u -e
 # the program name eg: foo.sh
 PROGRAM_NAME=$(basename $0)
 # absolute path to this script, e.g. /home/user/bin/foo.sh
-PROGRAM_FULL=$(readlink -f "$0")
+PROGRAM_FULL=$(cd "$(dirname "$0")"; pwd)
+#PROGRAM_FULL=$(readlink -f "$0") # bsd readlink is different from linux. this does not work on a mac
 # absolute path this script is in, thus /home/user/bin
-PROGRAM_PATH=$(dirname "$PROGRAM_FULL")
+PROGRAM_PATH=$(dirname "$0")
 # the working directory, directory this script is called from initially eg: /home/user
 WORKING_DIRECTORY=$(pwd)
 # current time
@@ -37,6 +38,7 @@ function install() {
 
 # change directory to dotfiles root
 cd "$PROGRAM_PATH"
+
 # make sure to source via ~/.bashrc
 install bash/bash_custom "$HOME/.bash_custom"
 install ctags/ctags "$HOME/.ctags"
