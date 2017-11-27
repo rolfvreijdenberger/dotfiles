@@ -74,6 +74,11 @@ nmap <Down> :echo "use j"<CR>
 nmap  <leader>vs :source $MYVIMRC<CR>
 " Vimrc file Edit 
 nmap <leader>ve :e $MYVIMRC<CR>
+" write as sudo (Sudo Write)
+nmap <leader>sw :w !sudo tee %
+" toggle invisible character display
+nmap <leader>l :set list !<CR>
+
 
 " Window switching (normally all window operations start with <C-w>) with a
 " count
@@ -96,27 +101,25 @@ nnoremap  <leader>rrk :exe "resize " . (winheight(0) * 3/2)<CR>
 nnoremap  <leader>rrj :exe "resize " . (winheight(0) * 2/3)<CR>
 nnoremap  <leader>rrl :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
 
-" buffer handling
+" buffer handling (Buffer [Next, Previous, Show])
 nmap  <leader>bn :bnext<CR>
 nmap  <leader>bp :bprevious<CR>
 nmap  <leader>bs :ls<CR>
 
-" toggle invisible character display
-nmap <leader>l :set list !<CR>
-
-" Nerdtree mappings
+" Nerdtree mappings (NERDTree [Enter,Toggle,Focus, Close,Quit])
 nmap <leader>ne : NERDTree<CR>
 nmap <leader>nt : NERDTreeToggle<CR>
 nmap <leader>nf : NERDTreeFocus<CR>
 nmap <leader>nc : NERDTreeClose<CR>
 nmap <leader>nq : NERDTreeClose<CR>
 
-" Tagbar mappings
+" Tagbar mappings (Tagbar [Enter,Toggle,Close,Quit])
 nmap  <leader>te : Tagbar<CR>
 nmap  <leader>tt : TagbarToggle<CR>
 nmap  <leader>tc : TagbarClose<CR>
 nmap  <leader>tq : TagbarClose<CR>
 nmap <F8> :TagbarToggle<CR>
+
 " END MAPPINGS 
 
 
