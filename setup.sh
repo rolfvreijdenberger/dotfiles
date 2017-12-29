@@ -66,7 +66,11 @@ case "$OSTYPE" in
   linux*)
     echo "linux specific setup"
     install gnupg/gpg-agent-linux.conf "$HOME/.gnupg/gpg-agent.conf"
+    install gnupg/scd-event "$HOME/.gnupg/scd-event"
+    install gnupg/scdaemon.conf "$HOME/.gnupg/scdaemon.conf"
     touch "$HOME/.gnupg/gpg-agent.log"
+    touch "$HOME/.gnupg/scdaemon.log"
+    chmod +x "$HOME/.gnupg/scd-event"
     # tmux settings
     install tmux/tmux-linux.conf "$HOME/.tmux.conf"
     # tmux copy/paste needs xclip

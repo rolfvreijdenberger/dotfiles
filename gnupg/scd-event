@@ -1,0 +1,10 @@
+#!/bin/sh
+# ~/.gnupg/scd-event
+
+# see https://www.sidorenko.io/post/2014/11/yubikey-or-openpgp-smartcards-for-newbies/
+# echo "$@" >> /tmp/scdaemon
+
+state=$8
+if [ "$state" = "NOCARD" ]; then
+  pkill -9 scdaemon
+fi

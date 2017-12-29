@@ -24,8 +24,8 @@ NC='\[$(tput sgr0)\]'
 
 
 # locale settings
-export LC_ALL="en_GB.UTF-8"
-export LANG="en_GB.UTF-8"
+# export LC_ALL="en_GB.UTF-8"
+# export LANG="en_GB.UTF-8"
 
 
 # use vim for everything
@@ -85,7 +85,7 @@ export LS_OPTIONS='--color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
-alias ls='ls -G'
+alias ls='ls --color=auto'
 # colors for less, useful in manpages
 export LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
 export LESS_TERMCAP_md=$(printf '\e[01;33m') # enter double-bright mode - bold, magenta
