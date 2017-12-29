@@ -6,6 +6,8 @@
 # needs ssh 7.3
 # Include config.d/* 
 
+ServerAliveInterval 45
+
 Host phalanx
   Hostname sentinel.ddns.me
   User rolf
@@ -23,3 +25,8 @@ Host router
   Port 22
   ProxyCommand ssh -p 2222 -q -W %h:%p sentinel.ddns.me
 
+Host thor
+  Hostname thor.home
+  User rolf
+  Port 22
+  ProxyCommand ssh -p 2222 -q -W %h:%p sentinel.ddns.me
