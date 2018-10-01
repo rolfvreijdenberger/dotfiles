@@ -1,0 +1,81 @@
+# setting up a new smartcard (from a backup of a private key with subkeys for signing/encrypting/authenticating)
+
+# check smarcard readers
+pcsc_scan -n 
+# insert new smartcardq
+# check card characteristics
+dmesg 
+
+
+# use a new gnupg homedir with seperate keyring etc.
+mkdir ~/gnupg-test
+chmod 700 ~/gnupg-test
+cd ~/gnupg-test
+export GNUPGHOME=~/gnupg-test
+# check if the environment variable has been picked up succesfully
+gpg --version
+
+cp <your-stored-backup-of-gpg-private-key> ~/gnupg-test/
+# decrypt the key you have symmetrically encrypted (you did do this right?)
+gpg --decrypt ~/gnupg-test/<backup-of-gpg-private-key> > mykey.key
+# use the password for the private key (different from the one above)
+gpg --import mykey.key
+
+# check status in new keyring
+gpg -k
+# get the public key 
+gpg --fetch-key
+# import  from 
+# https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399
+# or https://pgp.mit.edu/pks/lookup?op=get&search=0x5E586F16BF002399
+# store the above in a file public-key.pub 
+gpg --import public-key.pub
+# check
+gpg -k
+
+
+# now edit the new card
+gpg --edit-card
+# change to admin mode and set normal/admin pin
+# also change the PUK/reset code
+# STORE THESE PINS somewhere safely.
+# in case you brick it: https://developers.yubico.com/ykneo-openpgp/ResetApplet.html
+# also change other details relevant with the url of the public key being the most relevant
+# url of public key: https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399 
+
+
+# transfer the keys: THIS DESTROYS THEM ON DISK. make sure there is a backup!
+# in case you do not have a key, follow this guide and make a backup before transferring keys to cards
+# see https://www.sidorenko.io/post/2014/11/yubikey-or-openpgp-smartcards-for-newbies/
+
+gpg --card-edit <key-id>
+toggle
+key 1
+keytocard # and select
+key 1
+key 2
+keytocard # and select
+key 2 
+key 3
+keytocard # and select
+# now save the configuration
+save
+# fetch public key
+gpg --fetch-keys https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399
+# create a stub to the keys
+gpg --card-status
+
+
+# your card will have a serial printed on the card. this can be used to id the card that is asked for by gpg
+# using multiple cards with gpg is not possible currently (there is a pull request in the works)
+# https://security.stackexchange.com/questions/165286/how-to-use-multiple-smart-cards-with-gnupg
+# https://security.stackexchange.com/questions/154702/gpg-encryption-subkey-on-multiple-smart-cards-issue
+# remove any stubs you might have of a previous smartcard from the default gnupg home directory
+rm ~/.gnupg/private-keys-v1.d/<stubkey-id>.key
+# get rid of the environment variable
+unset GNUPGHOME
+# re-create stubs
+gpg --card-status
+
+
+# finally, remove all traces from disk with shred -uz
