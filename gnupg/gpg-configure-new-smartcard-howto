@@ -16,19 +16,21 @@ export GNUPGHOME=~/gnupg-test
 gpg --version
 
 cp <your-stored-backup-of-gpg-private-key> ~/gnupg-test/
-# decrypt the key you have symmetrically encrypted (you did do this right?)
+# decrypt the key you have symmetrically encrypted WITH A SAFELY STORED PASSPHRASE (you did do this right?)
 gpg --decrypt ~/gnupg-test/<backup-of-gpg-private-key> > mykey.key
-# use the password for the private key (different from the one above)
+# import the private key. it SHOULD HAVE BEEN MADE passphrase protected so
+# use A SAFELY STORED DIFFERENT PASSPHRASE FROM THE ONE ABOVE 
 gpg --import mykey.key
 
 # check status in new keyring
 gpg -k
-# get the public key 
-gpg --fetch-key
+# get the public key with the latest data/signatures/validity information etc
+gpg --fetch-key <url>
 # import  from 
 # https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399
 # or https://pgp.mit.edu/pks/lookup?op=get&search=0x5E586F16BF002399
-# store the above in a file public-key.pub 
+# in case this does not work, download the public key and 
+# store it in a file public-key.pub 
 gpg --import public-key.pub
 # check
 gpg -k
@@ -36,9 +38,11 @@ gpg -k
 
 # now edit the new card
 gpg --edit-card
-# change to admin mode and set normal/admin pin
+# change to admin mode and set normal/admin pin via the menu changes
+# default pin yubi: 123456. default admin pin yubi 12345678
 # also change the PUK/reset code
-# STORE THESE PINS somewhere safely.
+# default PUK yubi: 12345678
+# STORE THESE NEW PINS somewhere safely.
 # in case you brick it: https://developers.yubico.com/ykneo-openpgp/ResetApplet.html
 # also change other details relevant with the url of the public key being the most relevant
 # url of public key: https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399 
@@ -48,7 +52,12 @@ gpg --edit-card
 # in case you do not have a key, follow this guide and make a backup before transferring keys to cards
 # see https://www.sidorenko.io/post/2014/11/yubikey-or-openpgp-smartcards-for-newbies/
 
-gpg --card-edit <key-id>
+# start editing the key on disk for transfer to the smartcard.
+# the keys on disk will be destroyed after this and will only live on the smartcard.
+# keystubs (binary files pointing to the location of the keys on the smartcard) will 
+# be created in GNUPGHOME/private-keys-v1.d/
+# stubkeys can always be (re)created with gpg --card-status
+gpg --edit-key <key-id>
 toggle
 key 1
 keytocard # and select
@@ -71,6 +80,8 @@ gpg --card-status
 # https://security.stackexchange.com/questions/165286/how-to-use-multiple-smart-cards-with-gnupg
 # https://security.stackexchange.com/questions/154702/gpg-encryption-subkey-on-multiple-smart-cards-issue
 # remove any stubs you might have of a previous smartcard from the default gnupg home directory
+# you can find out the stubkey-id with the command 'gpg --with-keygrip -K'
+
 rm ~/.gnupg/private-keys-v1.d/<stubkey-id>.key
 # get rid of the environment variable
 unset GNUPGHOME
