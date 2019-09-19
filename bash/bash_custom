@@ -110,12 +110,11 @@ case "$OSTYPE" in
     # eval $(keychain --eval --quiet)
     ;;
   linux*)
-    export "GPG_TTY=$(tty)"
-    export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
+    # export "GPG_TTY=$(tty)"
+    # export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
     # https://ryanlue.com/posts/2017-06-29-gpg-for-ssh-auth
     export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
     gpgconf --launch gpg-agent
-    echo UPDATESTARTUPTTY | gpg-connect-agent > /dev/null
     ;;
   bsd*)
     echo "BSD"
@@ -128,6 +127,6 @@ esac
 # no longer needed for gpg 2.2
 if [ -f "${HOME}/.gpg-agent-info" ]; then
   . "${HOME}/.gpg-agent-info"
-  export GPG_AGENT_INFO
-  export SSH_AUTH_SOCK
+  #export GPG_AGENT_INFO
+  #export SSH_AUTH_SOCK
 fi
