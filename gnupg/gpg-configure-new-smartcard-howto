@@ -1,0 +1,118 @@
+# HOWTO for setting up a new smartcard (yubi5) on linux (fedora/debian/centos tested)
+# This howto is focused on a transfer of a backup of a private key 
+# with subkeys for signing/encrypting/authenticating to a new smartcard.
+
+# it is advised to NOT create the keys on the smartcard itself IF you ever want
+# to reuse them on another smartcard.
+# a strategy might be to create new keys (with a passphrase for key usage) and
+# then symmetrically encrypt these keys with a different passphrase for key storage.
+# create backups (3-2-1 backup strategy at a minimum please) of these encrypted keys.
+# you can then safely use the generated keys to transfer them to a smartcard and
+# have a backup to retry if you mess it up.
+# it is assumed that you have uploaded your public key to a keyserver.
+
+
+######################### start here - setup
+# check smarcard readers (install packages if needed)
+pcsc_scan -n 
+# insert the new smartcard to see what info is there
+
+# check card characteristics via dmesg
+dmesg 
+
+# use a new gnupg homedir with seperate keyring etc.
+mkdir ~/gnupg-test
+chmod 700 ~/gnupg-test
+cd ~/gnupg-test
+
+#TRICKY: this relies heavily on the env variable GNUPGHOME
+# which we manually set, so watch out that you do not accidentally start working in 
+# a new shell halfway through this operation
+export GNUPGHOME=~/gnupg-test
+
+# check if the environment variable has been picked up succesfully
+gpg --version
+
+cp <your-stored-backup-of-gpg-private-key> ~/gnupg-test/
+# decrypt the key you have symmetrically encrypted somewhere WITH A SAFELY STORED PASSPHRASE.
+gpg --decrypt ~/gnupg-test/<backup-of-gpg-private-key> > mykey.key
+# import the private key. it SHOULD HAVE BEEN MADE passphrase protected so
+# use A SAFELY STORED DIFFERENT PASSPHRASE FROM THE ONE ABOVE 
+gpg --import mykey.key
+
+# check status in new keyring
+gpg -k
+gpg -K
+# get your public key with the latest data/signatures/validity information etc
+gpg --fetch-key <url>
+# import from 
+# https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399
+# or https://pgp.mit.edu/pks/lookup?op=get&search=0x5E586F16BF002399
+# in case this does not work, download the public key and 
+# store it in a file public-key.pub 
+gpg --import public-key.pub
+# check
+gpg -k
+
+
+
+# now edit the new card
+gpg --edit-card
+> help
+# change to admin mode and set normal/admin pin via the menu changes
+> admin
+> help
+# default pin yubi: 123456. default admin pin yubi 12345678
+# also change the PUK/reset code
+# default PUK yubi: 12345678
+# STORE THESE NEW UNIQUE PINS/PUK/RESET codes somewhere safely.
+# in case you brick it: https://developers.yubico.com/ykneo-openpgp/ResetApplet.html
+# also change other details relevant with the url of the public key being the most relevant
+# url of public key: https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399 
+
+
+# transfer the keys: THIS DESTROYS THEM ON DISK. make sure there is a backup!
+# in case you do not have a key, follow this guide and make a backup before transferring keys to cards
+# see https://www.sidorenko.io/post/2014/11/yubikey-or-openpgp-smartcards-for-newbies/
+
+# start editing the key on disk for transfer to the smartcard.
+# the keys on disk will be destroyed after this and will only live on the smartcard.
+# keystubs (binary files pointing to the location of the keys on the smartcard) will 
+# be created in GNUPGHOME/private-keys-v1.d/
+# stubkeys can always be (re)created with gpg --card-status
+gpg --edit-key <key-id>
+> toggle
+> key 1
+> keytocard # and select (encrypt/sign/authenticate)
+> key 1
+> key 2
+> keytocard # and select
+> key 2 
+> key 3
+> keytocard # and select
+# now save the configuration
+> save
+
+# fetch public key
+gpg --fetch-keys https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399
+
+# create a keystub for the keys
+gpg --card-status
+
+
+# your card will have a serial printed on the card. this can be used to id the card that is asked for by gpg
+# using multiple cards with gpg is not possible currently (there is a pull request in the works)
+# https://security.stackexchange.com/questions/165286/how-to-use-multiple-smart-cards-with-gnupg
+# https://security.stackexchange.com/questions/154702/gpg-encryption-subkey-on-multiple-smart-cards-issue
+# remove any stubs you might have of a previous smartcard from the default gnupg home directory
+# and recreate them (alternatively, setup udev rules to detect the smartcard and use the correct keystubs)
+# you can find out the stubkey-id with the command 'gpg --with-keygrip -K'
+
+rm ~/.gnupg/private-keys-v1.d/<stubkey-id>.key
+# get rid of the environment variable
+unset GNUPGHOME
+# re-create stubs
+gpg --card-status
+
+
+# finally, remove all traces from disk with shred -uz
