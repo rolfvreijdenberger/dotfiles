@@ -5,7 +5,9 @@
 " colors are set after the plugins have loaded
 " the colorized statusline conveys a lot of information. see :help statusline
 set nocompatible
+set modeline
 set modelines=1
+set modelineexpr
 set history=50
 syntax on
 set number
@@ -197,6 +199,8 @@ Plug 'ervandew/supertab'
 Plug 'Raimondi/delimitMate'
 " html
 Plug 'mattn/emmet-vim'
+" latex
+Plug 'lervag/vimtex'
 call plug#end()
 " PLUGINtagbar
 let g:tagbar_autofocus = 1
@@ -280,3 +284,8 @@ endif
 " http://vim.wikia.com/wiki/Xterm256_color_names_for_console_Vim
 " colorscheme murphy 
 
+
+au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
+" https://realpython.com/vim-and-python-a-match-made-in-heaven/#syntax-checkinghighlighting
+" python pep8 settings
+au FileType python  set tabstop=4 |set softtabstop=4 |set shiftwidth=4 |set textwidth=79 |set expandtab |set autoindent |set fileformat=unix|set encoding=utf-8
