@@ -50,6 +50,7 @@ _generate_ps1() {
 export HISTSIZE=20000
 export HISTFILESIZE=$HISTSIZE
 export HISTCONTROL=ignoredups:erasedups
+export HISTIGNORE="&:ls:[bf]g:exit:history"
 export HISTTIMEFORMAT='%Y-%m-%d %H:%M.%S | '
 shopt -s histappend
 unset PROMPT_COMMAND

@@ -2,7 +2,7 @@
 # ~/.gitconfig 
 [user]
 	name              = Rolf Vreijdenberger
-	email             = rolf@vreijdenberger.nl 
+	email             = rolf@vreijdenberger.nl
 [push]
 	default           = upstream
 [color]
