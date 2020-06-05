@@ -48,7 +48,7 @@ _generate_ps1() {
 # history settings for multipe terminals
 # see https://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
 export HISTSIZE=20000
-export HISTFILESIZE=$HISTSIZE
+export HISTFILESIZE=50000
 export HISTCONTROL=ignoredups:erasedups
 export HISTIGNORE="&:ls:[bf]g:exit:history"
 export HISTTIMEFORMAT='%Y-%m-%d %H:%M.%S | '
