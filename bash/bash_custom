@@ -132,5 +132,17 @@ if [ -f "${HOME}/.gpg-agent-info" ]; then
   #export SSH_AUTH_SOCK
 fi
 
+# man pages in vim ヽ(´▽`)/
 function vman { man "$@" | vim -MR -c 'file [stdin]'  +"set filetype=man" - ; }
 
+# use pushd internally (https://www.redhat.com/sysadmin/cd-command)
+function cd
+{
+  if [ $# -eq 0 ]; then
+    pushd ~ > /dev/null
+  elif [ " $1" = " -" ]; then
+    pushd "$OLDPWD" > /dev/null
+  else
+    pushd "$@" > /dev/null
+  fi
+}
