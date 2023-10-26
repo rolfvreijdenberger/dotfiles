@@ -68,7 +68,7 @@ gpg --edit-card
 # STORE THESE NEW UNIQUE PINS/PUK/RESET codes somewhere safely.
 # in case you brick it: https://developers.yubico.com/ykneo-openpgp/ResetApplet.html
 # also change other details relevant with the url of the public key being the most relevant
-# url of public key: https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399 
+# url of public key: https://keys.openpgp.org/vks/v1/by-fingerprint/E7D36CDBBFA00D5291F8224D5E586F16BF002399
 
 
 # transfer the keys: THIS DESTROYS THEM ON DISK. make sure there is a backup!
@@ -94,7 +94,7 @@ gpg --edit-key <key-id>
 > save
 
 # fetch public key
-gpg --fetch-keys https://sks-keyservers.net/pks/lookup?op=get&search=0x5E586F16BF002399
+gpg --fetch-keys https://keys.openpgp.org/vks/v1/by-fingerprint/E7D36CDBBFA00D5291F8224D5E586F16BF002399
 
 # create a keystub for the keys
 gpg --card-status
