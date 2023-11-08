@@ -11,6 +11,10 @@
 # have a backup to retry if you mess it up.
 # it is assumed that you have uploaded your public key to a keyserver.
 
+# other resources
+# https://github.com/drduh/YubiKey-Guide
+# https://support.yubico.com/hc/en-us/articles/360013790259-Using-Your-YubiKey-with-OpenPGP
+
 
 ######################### start here - setup
 # check smarcard readers (install packages if needed)
