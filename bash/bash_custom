@@ -40,6 +40,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# disable Ctrl+S terminal freeze (XON/XOFF flow control)
+stty -ixon
+
 # use vim for everything
 export VISUAL=vim
 export EDITOR=vim
@@ -147,6 +150,154 @@ esac
 
 # man pages in vim ヽ(´▽`)/
 function vman { man "$@" | vim -MR -c 'file [stdin]'  +"set filetype=man" - ; }
+
+# quick reference for key bindings and helpers on this machine
+function vhelp {
+  echo ""
+  echo "  TMUX"
+  echo "    PREFIX        = C-a  (primary, screen-like) or C-b (default, still works)"
+  echo "    PREFIX ?      = show all key bindings"
+  echo "    PREFIX r      = reload tmux config"
+  echo "    PREFIX |/-    = split pane vertical/horizontal"
+  echo "    PREFIX h/j/k/l= navigate panes"
+  echo "    PREFIX C-s    = save session (tmux-resurrect)"
+  echo "    PREFIX C-r    = restore session (tmux-resurrect)"
+  echo "    PREFIX [      = enter copy mode (vi keys: v=select, y=yank)"
+  echo ""
+  echo "  VIM"
+  echo "    :map          = show all mappings"
+  echo "    :nmap         = normal mode mappings"
+  echo "    :vmap         = visual mode mappings"
+  echo "    :imap         = insert mode mappings"
+  echo "    :Tutor        = interactive vim tutorial"
+  echo "    \\nt           = toggle NERDTree"
+  echo "    \\tt           = toggle Tagbar"
+  echo "    ]a / [a       = next/previous ALE error"
+  echo ""
+  echo "  BASH"
+  echo "    vman <cmd>    = open man page in vim"
+  echo "    vhelp       = show this help"
+  echo "    vinstall    = install preferred packages"
+  echo "    vstatus     = system overview"
+  echo "    setup-motd    = update /etc/motd"
+  echo ""
+}
+
+# install preferred packages on a new machine
+# supports debian, ubuntu, rhel, fedora, centos
+function vinstall {
+  # detect package manager
+  if command -v apt-get &>/dev/null; then
+    PM="apt-get"
+    PM_INSTALL="sudo apt-get install --assume-yes"
+    PM_UPDATE="sudo apt-get update"
+    PKG_NETCAT="netcat-openbsd"
+    PKG_DNS="dnsutils"
+    PKG_MTR="mtr-tiny"
+    PKG_7ZIP="p7zip-full"
+    PKG_FIREWALL="ufw"
+  elif command -v dnf &>/dev/null; then
+    PM="dnf"
+    PM_INSTALL="sudo dnf install --assumeyes"
+    PM_UPDATE="sudo dnf check-update; true"  # check-update returns 100 when updates exist, not an error
+    PKG_NETCAT="nmap-ncat"
+    PKG_DNS="bind-utils"
+    PKG_MTR="mtr"
+    PKG_7ZIP="p7zip"
+    PKG_FIREWALL="firewalld"
+  elif command -v yum &>/dev/null; then
+    PM="yum"
+    PM_INSTALL="sudo yum install --assumeyes"
+    PM_UPDATE="sudo yum check-update; true"
+    PKG_NETCAT="nmap-ncat"
+    PKG_DNS="bind-utils"
+    PKG_MTR="mtr"
+    PKG_7ZIP="p7zip"
+    PKG_FIREWALL="firewalld"
+  else
+    echo "no supported package manager found (apt-get, dnf, yum)"
+    return 1
+  fi
+
+  echo "detected package manager: $PM"
+  echo "updating package index..."
+  eval "$PM_UPDATE"
+
+  # common packages available on all distros
+  PACKAGES=(
+    vim tmux git
+    htop iotop iftop sysstat
+    curl wget rsync
+    nmap tcpdump iperf3
+    traceroute whois net-tools
+    lsof strace
+    tree ncdu
+    jq fzf ripgrep
+    zip unzip
+    fail2ban
+    bash-completion
+    gnupg2
+    cmatrix
+    mosh
+  )
+
+  # distro-specific package names
+  PACKAGES+=(
+    "$PKG_NETCAT"
+    "$PKG_DNS"
+    "$PKG_MTR"
+    "$PKG_7ZIP"
+    "$PKG_FIREWALL"
+  )
+
+  # clipboard tools only on systems with a display
+  if [[ -n "$DISPLAY" || -n "$WAYLAND_DISPLAY" ]]; then
+    echo "display detected — installing clipboard tools"
+    PACKAGES+=(xclip wl-clipboard)
+  else
+    echo "headless server — skipping clipboard tools"
+  fi
+
+  echo "installing packages..."
+  $PM_INSTALL "${PACKAGES[@]}"
+  echo "done installing packages"
+}
+
+# system status overview — useful on login or after something feels off
+function vstatus {
+  echo ""
+  echo "  HOST"
+  echo "    hostname  : $(hostname -f 2>/dev/null || hostname)"
+  echo "    uptime    : $(uptime -p 2>/dev/null || uptime)"
+  echo "    date      : $(date)"
+  echo ""
+  echo "  LOAD & MEMORY"
+  echo "    load      : $(cut -d' ' -f1-3 /proc/loadavg) (1/5/15 min)"
+  free -h | awk '/^Mem:/ { printf "    memory    : %s used / %s total / %s free\n", $3, $2, $4 }'
+  echo ""
+  echo "  DISK"
+  df -h --output=target,pcent,used,size -x tmpfs -x devtmpfs 2>/dev/null | \
+    awk 'NR==1 { next } { printf "    %-20s %s used of %s (%s)\n", $1, $3, $4, $2 }'
+  echo ""
+  echo "  NETWORK"
+  ip -brief addr show 2>/dev/null | awk '{ printf "    %-10s %-12s %s\n", $1, $2, $3 }' || \
+    ifconfig 2>/dev/null | grep -E 'inet |^[a-z]'
+  echo ""
+  echo "  LOGINS"
+  echo "    last logins:"
+  last -n 5 -a 2>/dev/null | head -5 | awk '{ printf "    %s\n", $0 }'
+  echo ""
+  echo "  SECURITY"
+  if command -v fail2ban-client &>/dev/null; then
+    BANNED=$(sudo fail2ban-client status sshd 2>/dev/null | grep 'Currently banned' | awk '{print $NF}')
+    echo "    fail2ban  : ${BANNED:-0} currently banned on sshd"
+  else
+    echo "    fail2ban  : not installed"
+  fi
+  FAILED=$(lastb -n 5 2>/dev/null | wc -l)
+  echo "    failed ssh: ${FAILED} recent attempts (lastb)"
+  echo ""
+}
 
 # use pushd internally (https://www.redhat.com/sysadmin/cd-command)
 function cd

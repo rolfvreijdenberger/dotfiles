@@ -57,14 +57,19 @@ while IFS= read -r key; do
   fi
 done < ssh/authorized_keys
 
-echo "Paste an additional public key to authorize (or press Enter to skip):"
-read -r EXTRA_KEY
-if [[ -n "$EXTRA_KEY" ]]; then
-  if ! grep -qF "$EXTRA_KEY" "$AUTHORIZED_KEYS"; then
-    echo "$EXTRA_KEY" >> "$AUTHORIZED_KEYS"
-    echo "added extra public key"
-  else
-    echo "key already present, skipping"
+# only prompt for extra key on first run (when authorized_keys only has hardcoded keys)
+HARDCODED_COUNT=$(grep -c '^ssh-' ssh/authorized_keys 2>/dev/null || echo 0)
+CURRENT_COUNT=$(grep -c '^ssh-' "$AUTHORIZED_KEYS" 2>/dev/null || echo 0)
+if [[ "$CURRENT_COUNT" -le "$HARDCODED_COUNT" ]]; then
+  echo "Paste an additional public key to authorize (or press Enter to skip):"
+  read -r EXTRA_KEY
+  if [[ -n "$EXTRA_KEY" ]]; then
+    if ! grep -qF "$EXTRA_KEY" "$AUTHORIZED_KEYS"; then
+      echo "$EXTRA_KEY" >> "$AUTHORIZED_KEYS"
+      echo "added extra public key"
+    else
+      echo "key already present, skipping"
+    fi
   fi
 fi
 install tmux/tmux.conf "$HOME/.tmux.conf"
@@ -90,4 +95,9 @@ touch "$HOME/.gnupg/scdaemon.log"
 chmod +x "$HOME/.gnupg/scd-event"
 
 
-echo "done installing"
+echo ""
+echo "done installing. useful commands:"
+echo "  vhelp       — tmux/vim/bash key binding reference"
+echo "  vinstall    — install preferred packages (htop, nmap, cmatrix...)"
+echo "  setup-motd    — set host purpose and notes in /etc/motd"
+echo ""
