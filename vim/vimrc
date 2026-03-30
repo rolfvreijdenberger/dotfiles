@@ -7,8 +7,7 @@
 set nocompatible
 set modeline
 set modelines=1
-set modelineexpr
-set history=50
+set history=1000
 syntax on
 set number
 set nolist
@@ -34,14 +33,13 @@ set showmatch
 set matchtime=3
 
 " file editing
-filetype on
+filetype plugin indent on
 set autoread
 set expandtab
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set autoindent
-set smartindent
 set colorcolumn=80
 highlight ColorColumn ctermfg=grey ctermbg=black
 
@@ -51,6 +49,13 @@ set wildmode=list:longest,full
 
 " mouse support
 set mouse=a
+
+" persistent undo across sessions
+set undofile
+set undodir=~/.vim/undodir
+
+" use system clipboard
+set clipboard=unnamedplus
 
 " more sane window splitting
 set splitbelow
@@ -79,7 +84,7 @@ nmap <leader>ve :e $MYVIMRC<CR>
 " write as sudo (Sudo Write)
 nmap <leader>sw :w !sudo tee %
 " toggle invisible character display
-nmap <leader>l :set list !<CR>
+nmap <leader>l :set list!<CR>
 
 
 " Window switching (normally all window operations start with <C-w>) with a
@@ -144,39 +149,37 @@ endif
 call plug#begin()
 " for installation of new ones: ':PlugInstall'
 " nerdtree file explorer
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'preservim/nerdtree', { 'on': ['NERDTree', 'NERDTreeToggle', 'NERDTreeFocus', 'NERDTreeClose'] }
 " jinja2 syntax for ansible templates
 Plug 'Glench/Vim-Jinja2-Syntax'
 " surround text with quotes
 Plug 'tpope/vim-surround'
-" syntax checker
-Plug 'vim-syntastic/syntastic'
+" async syntax/linting checker (replaces syntastic)
+Plug 'dense-analysis/ale'
 " git wrapper
 Plug 'https://github.com/tpope/vim-fugitive'
 " css color hightlighting
 Plug 'ap/vim-css-color'
 " only show text
 Plug 'junegunn/goyo.vim'
-" javascript 
+" javascript
 Plug 'pangloss/vim-javascript'
-" json 
-"Plug 'leshill/vim-json'
+" typescript
+Plug 'leafgarland/typescript-vim'
+" json
 Plug 'elzr/vim-json'
+" yaml
+Plug 'stephpy/vim-yaml'
+" markdown (better than built-in: folding, concealing, toc)
+Plug 'preservim/vim-markdown'
 " snippets engine
 Plug 'SirVer/ultisnips'
 " snippets library
 Plug 'honza/vim-snippets'
-"Plug 'Valloric/YouCompleteMe'
-" you need to have ctags installed
-" https://ricostacruz.com/til/navigate-code-with-ctags
-" tagbar with code outline,
-Plug 'majutsushi/tagbar'
-" tags for php
-Plug 'vim-php/tagbar-phpctags.vim'
+" tagbar with code outline
+Plug 'preservim/tagbar'
 " php syntax file
 Plug 'stanangeloff/php.vim'
-"optimizer for ctags update
-Plug 'craigemery/vim-autotag'
 " display,toggle and navigate marks
 Plug 'kshenoy/vim-signature'
 " vim theme (lightweight and good philosophy)
@@ -187,10 +190,8 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'lumiliet/vim-twig'
 " groovy syntax 
 Plug 'modille/groovy.vim'
-" use gcc to comment out/in lines
-" Plug 'tpope/vim-commentary'
-" comments 
-Plug 'scrooloose/nerdcommenter'
+" comments
+Plug 'preservim/nerdcommenter'
 " ansible highlighting and file detection
 Plug 'pearofducks/ansible-vim'
 " use 'tab' for autocompletion
@@ -252,26 +253,35 @@ let NERDTreeShowBookmarks=1
        \   'gitbranch': 'fugitive#head'
        \ },
        \ }
-"let g:airline_section_z ='%h%y line:%02l/%L(%p%%) col:%02c win:%{tabpagewinnr(tabpagenr())} tab:%{tabpagenr()} buf:%n reg:%{v:register}'
-"set statusline=%F%#important#%m%*%r\ %h%y\ line:%02l/%L(%p%%)\ col:%02c\ %=\ win:%{tabpagewinnr(tabpagenr())}\ tab:%{tabpagenr()}\ buf:%n\ reg:%{v:register}\ %#git#%{fugitive#statusline()}%*\ (%03b:0x%02B)\ %#hostname#%{hostname()}%* 
 " PLUGIN ultisnips
-" Trigger configuration. Do not use <tab> if you use
-" https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-" If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
-" PLUGIN SYNTASTIC
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
+" PLUGIN supertab — use c-n so tab is fully owned by UltiSnips
+let g:SuperTabDefaultCompletionType = "<c-n>"
+" PLUGIN ALE (async linting)
+let g:ale_linters = {
+\   'php':        ['php', 'phpcs', 'phpmd'],
+\   'python':     ['flake8'],
+\   'javascript': ['eslint'],
+\   'typescript': ['eslint', 'tsserver'],
+\   'yaml':       ['yamllint'],
+\   'json':       ['jsonlint'],
+\   'markdown':   ['markdownlint'],
+\ }
+let g:ale_fixers = {
+\   '*':          ['remove_trailing_lines', 'trim_whitespace'],
+\   'php':        ['phpcbf'],
+\   'javascript': ['eslint'],
+\   'typescript': ['eslint'],
+\ }
+let g:ale_fix_on_save = 0
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
+" navigate between errors with ]a / [a
+nmap ]a <Plug>(ale_next_wrap)
+nmap [a <Plug>(ale_previous_wrap)
 " PLUGIN ctrl-p
 if executable('ag')
   set grepprg=ag\ --nogroup\ --nocolor
@@ -285,6 +295,10 @@ endif
 " colorscheme murphy 
 
 
+" PLUGIN vim-markdown
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_frontmatter = 1
 au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
 " https://realpython.com/vim-and-python-a-match-made-in-heaven/#syntax-checkinghighlighting
 " python pep8 settings

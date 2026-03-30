@@ -4,13 +4,28 @@
 	name              = Rolf Vreijdenberger
 	email             = rolf@vreijdenberger.nl
 [push]
-	default           = upstream
+	default           = simple
+[pull]
+    rebase            = true
+[rebase]
+    autoStash         = true
+[fetch]
+    prune             = true
+[init]
+    defaultBranch     = main
 [color]
-    ui = true
+    ui                = true
 [core]
-    editor         = vim
-    pager          = less -R
+    editor            = vim
+    pager             = less -R
+    autocrlf          = input
 [merge]
-    tool           = vimdiff
+    tool              = vimdiff
+[diff]
+    tool              = vimdiff
 [alias]
-    last           = !git --no-pager log -1 HEAD
+    last              = !git --no-pager log -1 HEAD
+    lg                = log --oneline --graph --decorate --all
+    st                = status -sb
+    unstage           = reset HEAD --
+    aliases           = !git config --get-regexp '^alias\\.' | sed 's/alias\\.//g'

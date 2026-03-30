@@ -1,0 +1,4 @@
+# authorized public keys
+# one key per line, same format as ~/.ssh/authorized_keys
+# example: ssh-ed25519 AAAA... user@machine
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMwmz27guCRvrt9Bi1O7AQBGr4UjO6WMs2WkWDCe+NwX rolf@vreijdenberger.nl

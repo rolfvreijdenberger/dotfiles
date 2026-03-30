@@ -4,7 +4,7 @@
 
 
 # predefined color settings
-bold='\[$(tput bold)\]'
+bold='\[\e[1m\]'
 grey='\[\033[1;30m\]'
 red='\[\033[0;31m\]'
 RED='\[\033[1;31m\]'
@@ -20,7 +20,7 @@ blue='\[\033[0;34m\]'
 BLUE='\[\033[1;34m\]'
 cyan='\[\033[0;36m\]'
 CYAN='\[\033[1;36m\]'
-NC='\[$(tput sgr0)\]'
+NC='\[\e[0m\]'
 
 
 # locale settings
@@ -28,9 +28,22 @@ NC='\[$(tput sgr0)\]'
 # export LANG="en_GB.UTF-8"
 
 
+# personal bin on PATH
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
+
+# bash completions (distro-agnostic)
+if ! shopt -oq posix; then
+  if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [[ -f /etc/bash_completion ]]; then
+    . /etc/bash_completion
+  fi
+fi
+
 # use vim for everything
 export VISUAL=vim
 export EDITOR=vim
+# vi mode after completions to avoid interference
 set -o vi
 
 
@@ -38,10 +51,16 @@ set -o vi
 # http://bashrcgenerator.com/
 _generate_ps1() {
   last_status="$?"
+  # __git_ps1 is provided by git's bash contrib scripts
+  # install: sudo apt-get install git (usually included)
+  local git_branch=""
+  if command -v __git_ps1 &>/dev/null; then
+    git_branch="$(__git_ps1 "${red}(%s)${NC}")"
+  fi
   if [ $last_status -eq 0 ]; then
-    export PS1="${cyan}\u${red}@${cyan}\h${NC}[${yellow}\W${NC}]:${green}${last_status}${NC}:${red}\\$ ${NC}"
+    export PS1="${cyan}\u${red}@${cyan}\h${NC}[${yellow}\W${NC}]${git_branch}:${green}${last_status}${NC}:${red}\\$ ${NC}"
   else
-    export PS1="${cyan}\u${red}@${cyan}\h${NC}[${yellow}\w${NC}]:${red}${bold}${last_status}${NC}:${red}\\$ ${NC}"
+    export PS1="${cyan}\u${red}@${cyan}\h${NC}[${yellow}\w${NC}]${git_branch}:${red}${bold}${last_status}${NC}:${red}\\$ ${NC}"
   fi
 }
 
@@ -50,7 +69,7 @@ _generate_ps1() {
 export HISTSIZE=20000
 export HISTFILESIZE=50000
 export HISTCONTROL=ignoredups:erasedups
-export HISTIGNORE="&:ls:[bf]g:exit:history"
+export HISTIGNORE="&:ls:bg:fg:exit:history"
 export HISTTIMEFORMAT='%Y-%m-%d %H:%M.%S | '
 shopt -s histappend
 unset PROMPT_COMMAND
@@ -97,6 +116,8 @@ export LESS_TERMCAP_ue=$(printf '\e[0m') # leave underline mode
 export LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode - cyan
 
 # aliases
+alias ll='ls -lh --color=auto'
+alias la='ls -lah --color=auto'
 alias myip='curl icanhazip.com/s'
 
 
@@ -111,10 +132,9 @@ case "$OSTYPE" in
     # eval $(keychain --eval --quiet)
     ;;
   linux*)
-    # export "GPG_TTY=$(tty)"
-    # export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
     # https://ryanlue.com/posts/2017-06-29-gpg-for-ssh-auth
-    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    export "GPG_TTY=$(tty)"
+    export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
     gpgconf --launch gpg-agent
     ;;
   bsd*)
@@ -124,13 +144,6 @@ case "$OSTYPE" in
     echo "unhandled os: $OSTYPE"
     ;;
 esac
-
-# no longer needed for gpg 2.2
-if [ -f "${HOME}/.gpg-agent-info" ]; then
-  . "${HOME}/.gpg-agent-info"
-  #export GPG_AGENT_INFO
-  #export SSH_AUTH_SOCK
-fi
 
 # man pages in vim ヽ(´▽`)/
 function vman { man "$@" | vim -MR -c 'file [stdin]'  +"set filetype=man" - ; }
