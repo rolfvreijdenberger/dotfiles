@@ -151,6 +151,9 @@ esac
 # man pages in vim ヽ(´▽`)/
 function vman { man "$@" | vim -MR -c 'file [stdin]'  +"set filetype=man" - ; }
 
+# set up /etc/motd for this host
+function vsetupmotd { bash "$HOME/bin/setup-motd"; }
+
 # quick reference for key bindings and helpers on this machine
 function vhelp {
   echo ""
@@ -179,7 +182,7 @@ function vhelp {
   echo "    vhelp       = show this help"
   echo "    vinstall    = install preferred packages"
   echo "    vstatus     = system overview"
-  echo "    setup-motd    = update /etc/motd"
+  echo "    vsetupmotd    = update /etc/motd"
   echo ""
 }
 
