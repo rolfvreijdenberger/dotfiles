@@ -49,6 +49,8 @@ set wildmode=list:longest,full
 
 " mouse support
 set mouse=a
+" F2 toggles paste mode (prevents auto-indent mangling pasted text)
+set pastetoggle=<F2>
 
 " persistent undo across sessions
 set undofile
