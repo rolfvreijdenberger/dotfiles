@@ -325,7 +325,27 @@ function vtheme {
     return 1
   fi
   echo "$mode" > ~/.theme-bash-tmux-vim
-  [[ -n "$TMUX" ]] && tmux source-file ~/.tmux.conf
+  [[ -n "$TMUX" ]] && { tmux source-file ~/.tmux.conf || true; }
+  # OSC (Operating System Command) sequences to change terminal background/foreground
+  # supported by PuTTY, Windows Terminal (PowerShell), and Linux terminal emulators
+  # inside tmux wrapped in DCS passthrough to reach the outer terminal
+  if [[ "$mode" == "light" ]]; then
+    if [[ -n "$TMUX" ]]; then
+      printf '\ePtmux;\e\e]11;rgb:ff/ff/ff\a\e\\' || true
+      printf '\ePtmux;\e\e]10;rgb:00/00/00\a\e\\' || true
+    else
+      printf '\e]11;rgb:ff/ff/ff\a' || true
+      printf '\e]10;rgb:00/00/00\a' || true
+    fi
+  else
+    if [[ -n "$TMUX" ]]; then
+      printf '\ePtmux;\e\e]111;\a\e\\' || true
+      printf '\ePtmux;\e\e]110;\a\e\\' || true
+    else
+      printf '\e]111;\a' || true
+      printf '\e]110;\a' || true
+    fi
+  fi
   echo "theme: $mode — prompt auto-updates, vim updates on focus (or \\th to force)"
 }
 
