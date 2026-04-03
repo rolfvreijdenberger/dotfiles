@@ -41,7 +41,7 @@ if ! shopt -oq posix; then
 fi
 
 # disable Ctrl+S terminal freeze (XON/XOFF flow control)
-stty -ixon
+[[ -t 0 ]] && stty -ixon
 
 # use vim for everything
 export VISUAL=vim
@@ -54,16 +54,27 @@ set -o vi
 # http://bashrcgenerator.com/
 _generate_ps1() {
   last_status="$?"
-  # __git_ps1 is provided by git's bash contrib scripts
-  # install: sudo apt-get install git (usually included)
+  local _bold='\[\e[1m\]' _nc='\[\e[0m\]'
+  local _theme; _theme=$(cat ~/.theme-bash-tmux-vim 2>/dev/null) || _theme=dark
+  if [[ "$_theme" == "light" ]]; then
+    local _hi='\[\033[0;34m\]'  # dark blue  — user, host
+    local _lo='\[\033[0;31m\]'  # dark red   — @, git, $
+    local _di='\[\033[0;33m\]'  # dark olive — dir
+    local _ok='\[\033[0;32m\]'  # dark green — exit 0
+  else
+    local _hi='\[\033[0;36m\]'  # cyan   — user, host
+    local _lo='\[\033[0;31m\]'  # red    — @, git, $
+    local _di='\[\033[0;33m\]'  # yellow — dir
+    local _ok='\[\033[0;32m\]'  # green  — exit 0
+  fi
   local git_branch=""
   if command -v __git_ps1 &>/dev/null; then
-    git_branch="$(__git_ps1 "${red}(%s)${NC}")"
+    git_branch="$(__git_ps1 "${_lo}(%s)${_nc}")"
   fi
   if [ $last_status -eq 0 ]; then
-    export PS1="${cyan}\u${red}@${cyan}\h${NC}[${yellow}\W${NC}]${git_branch}:${green}${last_status}${NC}:${red}\\$ ${NC}"
+    export PS1="${_hi}\u${_lo}@${_hi}\h${_nc}[${_di}\W${_nc}]${git_branch}:${_ok}${last_status}${_nc}:${_lo}\\$ ${_nc}"
   else
-    export PS1="${cyan}\u${red}@${cyan}\h${NC}[${yellow}\w${NC}]${git_branch}:${red}${bold}${last_status}${NC}:${red}\\$ ${NC}"
+    export PS1="${_hi}\u${_lo}@${_hi}\h${_nc}[${_di}\w${_nc}]${git_branch}:${_lo}${_bold}${last_status}${_nc}:${_lo}\\$ ${_nc}"
   fi
 }
 
@@ -124,35 +135,25 @@ alias la='ls -lah --color=auto'
 alias myip='curl icanhazip.com/s'
 
 
-# some OS specific switching
-case "$OSTYPE" in
-  darwin*) #mac
-    # gpg agent for ssh authentication
-    # https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html#Invoking-GPG_002dAGENT
-    export "GPG_TTY=$(tty)"
-    export "SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh"
-    # eval $(gpg-agent --daemon --enable-ssh-support)
-    # eval $(keychain --eval --quiet)
-    ;;
-  linux*)
-    # https://ryanlue.com/posts/2017-06-29-gpg-for-ssh-auth
-    export "GPG_TTY=$(tty)"
-    export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-    gpgconf --launch gpg-agent
-    ;;
-  bsd*)
-    echo "BSD"
-    ;;
-  *)
-    echo "unhandled os: $OSTYPE"
-    ;;
-esac
+# GPG agent for SSH authentication (Linux)
+# https://ryanlue.com/posts/2017-06-29-gpg-for-ssh-auth
+if command -v gpgconf &>/dev/null; then
+  export "GPG_TTY=$(tty)"
+  export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+  gpgconf --launch gpg-agent
+fi
 
 # man pages in vim ヽ(´▽`)/
-function vman { man "$@" | vim -MR -c 'file [stdin]'  +"set filetype=man" - ; }
+function vman {
+  if ! command -v vim &>/dev/null; then echo "vim not installed"; return 1; fi
+  man "$@" | vim -MR -c 'file [stdin]' +"set filetype=man" -
+}
 
 # set up /etc/motd for this host
-function vsetupmotd { bash "$HOME/bin/setup-motd"; }
+function vsetupmotd {
+  if [[ ! -x "$HOME/bin/setup-motd" ]]; then echo "setup-motd not found in ~/bin"; return 1; fi
+  bash "$HOME/bin/setup-motd"
+}
 
 # quick reference for key bindings and helpers on this machine
 function vhelp {
@@ -201,6 +202,7 @@ function vhelp {
   echo "    vhelp         = show this help"
   echo "    vinstall      = install preferred packages"
   echo "    vstatus       = system overview"
+  echo "    vtheme [l/d]  = switch light/dark theme (prompt, vim, tmux)"
   echo "    vsetupmotd    = update /etc/motd"
   echo ""
 }
@@ -209,28 +211,21 @@ function vhelp {
 # supports debian, ubuntu, rhel, fedora, centos
 function vinstall {
   # detect package manager
-  if command -v apt-get &>/dev/null; then
-    PM="apt-get"
-    PM_INSTALL="sudo apt-get install --assume-yes"
-    PM_UPDATE="sudo apt-get update"
+  if command -v apt &>/dev/null; then
+    PM="apt"
+    PM_INSTALL="sudo apt install --assume-yes"
+    PM_UPDATE="sudo apt update"
+    PKG_VIM="vim-nox"
     PKG_NETCAT="netcat-openbsd"
     PKG_DNS="dnsutils"
     PKG_MTR="mtr-tiny"
     PKG_7ZIP="p7zip-full"
     PKG_FIREWALL="ufw"
-  elif command -v dnf &>/dev/null; then
-    PM="dnf"
-    PM_INSTALL="sudo dnf install --assumeyes"
-    PM_UPDATE="sudo dnf check-update; true"  # check-update returns 100 when updates exist, not an error
-    PKG_NETCAT="nmap-ncat"
-    PKG_DNS="bind-utils"
-    PKG_MTR="mtr"
-    PKG_7ZIP="p7zip"
-    PKG_FIREWALL="firewalld"
-  elif command -v yum &>/dev/null; then
-    PM="yum"
-    PM_INSTALL="sudo yum install --assumeyes"
-    PM_UPDATE="sudo yum check-update; true"
+  elif command -v dnf &>/dev/null || command -v yum &>/dev/null; then
+    PM=$(command -v dnf &>/dev/null && echo dnf || echo yum)
+    PM_INSTALL="sudo $PM install --assumeyes"
+    PM_UPDATE="sudo $PM check-update; true"  # check-update returns 100 when updates exist, not an error
+    PKG_VIM="vim-enhanced"
     PKG_NETCAT="nmap-ncat"
     PKG_DNS="bind-utils"
     PKG_MTR="mtr"
@@ -247,7 +242,7 @@ function vinstall {
 
   # common packages available on all distros
   PACKAGES=(
-    vim tmux git
+    "$PKG_VIM" tmux git
     htop iotop iftop sysstat
     curl wget rsync
     nmap tcpdump iperf3
@@ -311,14 +306,27 @@ function vstatus {
   echo ""
   echo "  SECURITY"
   if command -v fail2ban-client &>/dev/null; then
-    BANNED=$(sudo fail2ban-client status sshd 2>/dev/null | grep 'Currently banned' | awk '{print $NF}')
-    echo "    fail2ban  : ${BANNED:-0} currently banned on sshd"
+    BANNED=$(sudo -n fail2ban-client status sshd 2>/dev/null | grep 'Currently banned' | awk '{print $NF}')
+    echo "    fail2ban  : ${BANNED:-needs root (sudo -n failed)} currently banned on sshd"
   else
     echo "    fail2ban  : not installed"
   fi
-  FAILED=$(lastb -n 5 2>/dev/null | wc -l)
+  local lastb_out; lastb_out=$(lastb -n 5 2>/dev/null) && \
+    FAILED=$(echo "$lastb_out" | wc -l) || FAILED="needs root"
   echo "    failed ssh: ${FAILED} recent attempts (lastb)"
   echo ""
+}
+
+# switch terminal/vim/tmux between light and dark color themes
+function vtheme {
+  local mode="${1:-}"
+  if [[ "$mode" != "light" && "$mode" != "dark" ]]; then
+    echo "usage: vtheme [light|dark]  (current: $(cat ~/.theme-bash-tmux-vim 2>/dev/null || echo dark))"
+    return 1
+  fi
+  echo "$mode" > ~/.theme-bash-tmux-vim
+  [[ -n "$TMUX" ]] && tmux source-file ~/.tmux.conf
+  echo "theme: $mode — prompt auto-updates, vim updates on focus (or \\th to force)"
 }
 
 # use pushd internally (https://www.redhat.com/sysadmin/cd-command)

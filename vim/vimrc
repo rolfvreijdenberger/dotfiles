@@ -305,3 +305,29 @@ au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
 " https://realpython.com/vim-and-python-a-match-made-in-heaven/#syntax-checkinghighlighting
 " python pep8 settings
 au FileType python  set tabstop=4 |set softtabstop=4 |set shiftwidth=4 |set textwidth=79 |set expandtab |set autoindent |set fileformat=unix|set encoding=utf-8
+
+" light/dark theme — reads ~/.theme-bash-tmux-vim (vtheme bash function)
+function! ApplyTheme()
+  let l:t = 'dark'
+  if filereadable(expand('~/.theme-bash-tmux-vim'))
+    let l:t = trim(get(readfile(expand('~/.theme-bash-tmux-vim')), 0, 'dark'))
+  endif
+  if l:t ==# 'light'
+    set background=light
+    colorscheme zellner
+    highlight ColorColumn ctermfg=black ctermbg=lightgrey
+    let g:lightline.colorscheme = 'solarized'
+  else
+    set background=dark
+    colorscheme murphy
+    highlight ColorColumn ctermfg=grey ctermbg=black
+    let g:lightline.colorscheme = 'wombat'
+  endif
+  if exists('*lightline#init')
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+  endif
+endfunction
+autocmd VimEnter,FocusGained * call ApplyTheme()
+nmap <leader>th :call ApplyTheme()<CR>
