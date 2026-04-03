@@ -57,10 +57,10 @@ _generate_ps1() {
   local _bold='\[\e[1m\]' _nc='\[\e[0m\]'
   local _theme; _theme=$(cat ~/.theme-bash-tmux-vim 2>/dev/null) || _theme=dark
   if [[ "$_theme" == "light" ]]; then
-    local _hi='\[\033[0;34m\]'  # dark blue  — user, host
-    local _lo='\[\033[0;31m\]'  # dark red   — @, git, $
-    local _di='\[\033[0;33m\]'  # dark olive — dir
-    local _ok='\[\033[0;32m\]'  # dark green — exit 0
+    local _hi='\[\033[0;34m\]'  # blue         — user, host
+    local _lo='\[\033[0;31m\]'  # red          — @, git, $
+    local _di='\[\033[0;35m\]'  # magenta — dir
+    local _ok='\[\033[0;32m\]'  # green        — exit 0
   else
     local _hi='\[\033[0;36m\]'  # cyan   — user, host
     local _lo='\[\033[0;31m\]'  # red    — @, git, $
@@ -115,6 +115,14 @@ history() {
 
 # color options for utils
 export LS_OPTIONS='--color=auto'
+# theme-aware ls colors: light mode sets fi=0;30 so regular filenames are dark, not grey
+# note: permissions/owner/date columns are plain terminal text — set PuTTY Default Foreground
+# to black (Window > Colours) for those to appear dark on a white background
+if [[ "$(cat ~/.theme-bash-tmux-vim 2>/dev/null)" == "light" ]]; then
+  export LS_COLORS='rs=0:fi=0;30:di=01;34:ln=01;36:pi=01;33:so=01;35:bd=01;33:cd=01;33:or=01;31:ex=01;32'
+else
+  unset LS_COLORS
+fi
 #eval "`dircolors`"
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -203,6 +211,7 @@ function vhelp {
   echo "    vinstall      = install preferred packages"
   echo "    vstatus       = system overview"
   echo "    vtheme [l/d]  = switch light/dark theme (prompt, vim, tmux)"
+  echo "    vbs           = re-source bash configuration (~/.bashrc)"
   echo "    vsetupmotd    = update /etc/motd"
   echo ""
 }
@@ -326,6 +335,11 @@ function vtheme {
   fi
   echo "$mode" > ~/.theme-bash-tmux-vim
   [[ -n "$TMUX" ]] && { tmux source-file ~/.tmux.conf || true; }
+  if [[ "$mode" == "light" ]]; then
+    export LS_COLORS='rs=0:fi=0;30:di=01;34:ln=01;36:pi=01;33:so=01;35:bd=01;33:cd=01;33:or=01;31:ex=01;32'
+  else
+    unset LS_COLORS
+  fi
   # OSC (Operating System Command) sequences to change terminal background/foreground
   # supported by PuTTY, Windows Terminal (PowerShell), and Linux terminal emulators
   # inside tmux wrapped in DCS passthrough to reach the outer terminal
@@ -346,8 +360,16 @@ function vtheme {
       printf '\e]110;\a' || true
     fi
   fi
-  echo "theme: $mode — prompt auto-updates, vim updates on focus (or \\th to force)"
+  clear
+  if [[ "$mode" == "light" ]]; then
+    echo "theme: light — terminal bg: #bcbcbc or white if OSC unsupported, vim updates on focus"
+  else
+    echo "theme: dark  — terminal bg: reset to default if OSC unsupported, vim updates on focus"
+  fi
 }
+
+# re-source bash configuration
+function vbs { source ~/.bashrc; }
 
 # use pushd internally (https://www.redhat.com/sysadmin/cd-command)
 function cd
