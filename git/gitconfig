@@ -15,6 +15,28 @@
     defaultBranch     = main
 [color]
     ui                = true
+[color "decorate"]
+    head              = bold magenta
+    branch            = bold blue
+    remoteBranch      = bold red
+    tag               = bold green
+    stash             = bold cyan
+[color "log"]
+    commit            = bold blue
+[color "branch"]
+    current           = bold green
+    local             = bold blue
+    remote            = bold red
+[color "status"]
+    added             = bold green
+    changed           = bold red
+    untracked         = bold blue
+    branch            = bold magenta
+[color "diff"]
+    meta              = bold blue
+    frag              = bold magenta
+    old               = bold red
+    new               = bold green
 [core]
     editor            = vim
     pager             = less -R

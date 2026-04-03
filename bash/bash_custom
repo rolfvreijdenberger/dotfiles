@@ -337,8 +337,20 @@ function vtheme {
   [[ -n "$TMUX" ]] && { tmux source-file ~/.tmux.conf || true; }
   if [[ "$mode" == "light" ]]; then
     export LS_COLORS='rs=0:fi=0;30:di=01;34:ln=01;36:pi=01;33:so=01;35:bd=01;33:cd=01;33:or=01;31:ex=01;32'
+    # COLORFGBG signals light background to tools that respect it (vim, some others)
+    export COLORFGBG="0;15"
+    # LESS_TERMCAP: use dark bold colors readable on white (replaces bright defaults)
+    export LESS_TERMCAP_mb=$(printf '\e[01;31m')
+    export LESS_TERMCAP_md=$(printf '\e[01;34m')
+    export LESS_TERMCAP_so=$(printf '\e[01;35m')
+    export LESS_TERMCAP_us=$(printf '\e[01;32m')
   else
     unset LS_COLORS
+    export COLORFGBG="15;0"
+    export LESS_TERMCAP_mb=$(printf '\e[01;31m')
+    export LESS_TERMCAP_md=$(printf '\e[01;33m')
+    export LESS_TERMCAP_so=$(printf '\e[01;35m')
+    export LESS_TERMCAP_us=$(printf '\e[04;36m')
   fi
   # OSC (Operating System Command) sequences to change terminal background/foreground
   # supported by PuTTY, Windows Terminal (PowerShell), and Linux terminal emulators
