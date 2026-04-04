@@ -1,7 +1,9 @@
-# Dotfiles — Claude Code Context
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Purpose
-Personal Linux dotfiles for Rolf Vreijdenberger. Sets up bash, vim, tmux, git, ssh and gnupg via symlinks from this repo to `$HOME`. Linux-only (mac support was removed).
+Personal Linux dotfiles for Rolf Vreijdenberger. Sets up bash, vim, tmux, git, ssh and gnupg via symlinks from this repo to `$HOME`. Linux-only.
 
 ## Install
 ```bash
@@ -26,7 +28,7 @@ source ~/.bashrc
 ## Key conventions
 - **Leader key in vim**: `\` (backslash), with space as alias
 - **Tmux prefix**: `Ctrl+a` (primary) and `Ctrl+b` (default, still works)
-- **Functions are prefixed with `v`**: `vhelp`, `vinstall`, `vstatus`, `vsetupmotd`, `vman`
+- **Functions are prefixed with `v`**: `vhelp`, `vinstall`, `vstatus`, `vsetupmotd`, `vman`, `vtheme`, `vbs`
 - **Plugin managers**: vim-plug (vim), TPM (tmux) — both auto-install on first run
 - **setup.sh is idempotent**: safe to re-run after `git pull`
 
@@ -38,7 +40,29 @@ source ~/.bashrc
 | `vstatus` | system overview: load, disk, memory, logins, fail2ban |
 | `vsetupmotd` | update `/etc/motd` with host purpose and notes |
 | `vman <cmd>` | open man page in vim |
+| `vtheme [light\|dark]` | switch light/dark theme for prompt, vim, tmux, ls, less |
+| `vbs` | re-source `~/.bashrc` |
 | `cd` | overrides built-in to use `pushd` internally |
+
+## Theme switching (`vtheme`)
+State is stored in `~/.theme-bash-tmux-vim` (contains `light` or `dark`). Defaults to dark when absent.
+
+On switch, `vtheme` updates:
+- **Bash prompt**: reads theme file on every `PROMPT_COMMAND` render — auto-updates in all sessions
+- **Vim**: `ApplyTheme()` runs on `VimEnter`/`FocusGained`; manual `\th`; dark=murphy, light=zellner
+- **Tmux status bar**: `if-shell` reads the file on `PREFIX r` or `tmux source-file ~/.tmux.conf`; requires tmux ≥ 3.0
+- **LS_COLORS**: set for light (dark filenames), unset for dark (system defaults)
+- **LESS_TERMCAP**: dark bold colors in light mode, bright defaults in dark mode
+- **COLORFGBG**: `0;15` (light) / `15;0` (dark) — signals background to tools that respect it
+- **OSC sequences**: attempts to set terminal background via `\e]11`/`\e]10`; PuTTY requires `Window → Colours → Allow terminal to use xterm 256-colour mode`; plain text grey (ls metadata, git log body) requires setting PuTTY `Default Foreground` to black
+
+## vinstall package manager handling
+- Detects `apt` (Debian/Ubuntu) or `dnf`/`yum` (RHEL/Fedora/CentOS)
+- Installs `vim-nox` on Debian/Ubuntu, `vim-enhanced` on RHEL/Fedora — both have Python support required by UltiSnips
+- `dnf` takes precedence over `yum` when both are present
+
+## vstatus sudo behaviour
+`fail2ban-client` and `lastb` use `sudo -n` (non-interactive). When run as regular user without NOPASSWD, shows `needs root` inline instead of prompting. Works without sudo when run as root.
 
 ## Vim plugins (vim-plug)
 - `preservim/nerdtree` — file explorer (`\nt`)
@@ -67,6 +91,9 @@ source ~/.bashrc
 
 ## ALE linters configured
 PHP (php/phpcs/phpmd), Python (flake8), JS/TS (eslint/tsserver), YAML (yamllint), JSON (jsonlint), Markdown (markdownlint)
+
+## Git color config
+`gitconfig` explicitly sets bold dark colors (blue/red/green/magenta) for decorate, log, branch, status, and diff — readable on both dark and light terminal backgrounds.
 
 ## Preferences
 - Do not add features beyond what is asked
