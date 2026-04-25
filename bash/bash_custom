@@ -391,6 +391,6 @@ function cd
   elif [ " $1" = " -" ]; then
     pushd "$OLDPWD" > /dev/null
   else
-    pushd "$@" > /dev/null
+    pushd -- "$@" > /dev/null
   fi
 }
