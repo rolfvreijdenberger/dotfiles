@@ -49,15 +49,25 @@ set wildmode=list:longest,full
 
 " mouse support
 set mouse=a
-" F2 toggles paste mode (prevents auto-indent mangling pasted text)
-set pastetoggle=<F2>
+" F2 toggles paste mode where supported (older Vim paste workflow)
+if exists('&pastetoggle')
+  set pastetoggle=<F2>
+endif
 
 " persistent undo across sessions
 set undofile
-set undodir=~/.vim/undodir
+let undo_dir = expand('~/.vim/undodir')
+if !isdirectory(undo_dir)
+  call mkdir(undo_dir, 'p')
+endif
+let &undodir = undo_dir
 
 " use system clipboard
-set clipboard=unnamedplus
+if has('win32') || has('win64')
+  set clipboard=unnamed
+else
+  set clipboard=unnamedplus
+endif
 
 " more sane window splitting
 set splitbelow
@@ -83,8 +93,10 @@ nmap <Down> :echo "use j"<CR>
 nmap  <leader>vs :source $MYVIMRC<CR>
 " Vimrc file Edit 
 nmap <leader>ve :e $MYVIMRC<CR>
-" write as sudo (Sudo Write)
-nmap <leader>sw :w !sudo tee %
+" write as sudo (Sudo Write) — Linux/Unix only
+if !has('win32') && !has('win64')
+  nmap <leader>sw :w !sudo tee %
+endif
 " toggle invisible character display
 nmap <leader>l :set list!<CR>
 
@@ -116,17 +128,19 @@ nmap  <leader>bp :bprevious<CR>
 nmap  <leader>bs :ls<CR>
 
 " Nerdtree mappings (NERDTree [Enter,Toggle,Focus, Close,Quit])
-nmap <leader>ne : NERDTree<CR>
-nmap <leader>nt : NERDTreeToggle<CR>
-nmap <leader>nf : NERDTreeFocus<CR>
-nmap <leader>nc : NERDTreeClose<CR>
-nmap <leader>nq : NERDTreeClose<CR>
+" Commands are provided by vim-plug lazy loading when NERDTree is installed
+nmap <leader>ne :NERDTree<CR>
+nmap <leader>nt :NERDTreeToggle<CR>
+nmap <leader>nf :NERDTreeFocus<CR>
+nmap <leader>nc :NERDTreeClose<CR>
+nmap <leader>nq :NERDTreeClose<CR>
 
 " Tagbar mappings (Tagbar [Enter,Toggle,Close,Quit])
-nmap  <leader>te : Tagbar<CR>
-nmap  <leader>tt : TagbarToggle<CR>
-nmap  <leader>tc : TagbarClose<CR>
-nmap  <leader>tq : TagbarClose<CR>
+" Commands are available after plugin loading when Tagbar is installed
+nmap  <leader>te :Tagbar<CR>
+nmap  <leader>tt :TagbarToggle<CR>
+nmap  <leader>tc :TagbarClose<CR>
+nmap  <leader>tq :TagbarClose<CR>
 nmap <F8> :TagbarToggle<CR>
 
 " END MAPPINGS 
@@ -141,14 +155,52 @@ nmap <F8> :TagbarToggle<CR>
 " PRE PLUGIN MANAGER INSTALLATION
 " vim-plug:https://github.com/junegunn/vim-plug
 " central installation managed via .vimrc only. preferred above vundle and pathogen
-if empty(glob('~/.vim/autoload/plug.vim'))
-        silent !curl -s -fLo ~/.vim/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+let autoload_dir = has('win32') ? expand('$APPDATA/Vim/autoload') : expand('~/.vim/autoload')
+let plugged_dir = has('win32') ? expand('$APPDATA/Vim/plugged') : expand('~/.vim/plugged')
+let plug_file = autoload_dir . (has('win32') ? '\\' : '/') . 'plug.vim'
+
+let g:plug_install_success = 0
+
+if empty(glob(plug_file))
+        if !isdirectory(autoload_dir)
+                if !mkdir(autoload_dir, 'p')
+                        echom '[vimrc] ERROR: Could not create directory ' . autoload_dir
+                endif
+        endif
+        
+        echom '[vimrc] Downloading vim-plug...'
+        let download_success = 0
+        
+        if has('win32') || has('win64')
+                let cmd = 'powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -OutFile ' . shellescape(plug_file) . '"'
+                silent execute '!' . cmd
+        else
+                silent execute '!curl -s -fLo ' . shellescape(plug_file) . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+        endif
+        
+        if filereadable(plug_file)
+                echom '[vimrc] vim-plug downloaded successfully'
+                let g:plug_install_success = 1
+                autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+        else
+                echom '[vimrc] ERROR: Failed to download vim-plug from GitHub'
+                echom '[vimrc] Check your internet connection or install vim-plug manually:'
+                echom '[vimrc] https://github.com/junegunn/vim-plug'
+        endif
+else
+        let g:plug_install_success = 1
+endif
+
+" Source vim-plug if it exists
+if filereadable(plug_file)
+        execute 'source ' . plug_file
+else
+        echom '[vimrc] WARNING: vim-plug not found. Plugins will not be loaded.'
 endif
 
 " LOAD PLUGINS
-call plug#begin()
+if exists('*plug#begin')
+        call plug#begin(plugged_dir)
 " for installation of new ones: ':PlugInstall'
 " nerdtree file explorer
 Plug 'preservim/nerdtree', { 'on': ['NERDTree', 'NERDTreeToggle', 'NERDTreeFocus', 'NERDTreeClose'] }
@@ -204,7 +256,14 @@ Plug 'Raimondi/delimitMate'
 Plug 'mattn/emmet-vim'
 " latex
 Plug 'lervag/vimtex'
-call plug#end()
+        call plug#end()
+        
+        " if g:plug_install_success
+        "         echom '[vimrc] Plugins loaded: ' . len(g:plugs) . ' total'
+        " endif
+else
+        echom '[vimrc] WARNING: vim-plug not available. Install vim-plug manually or restart Vim to retry download.'
+endif
 " PLUGINtagbar
 let g:tagbar_autofocus = 1
 let g:tagbar_autoclose = 1
@@ -282,6 +341,7 @@ let g:ale_fix_on_save = 0
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '--'
 " navigate between errors with ]a / [a
+" Mappings are harmless if ALE is installed normally by vim-plug
 nmap ]a <Plug>(ale_next_wrap)
 nmap [a <Plug>(ale_previous_wrap)
 " PLUGIN ctrl-p
@@ -309,8 +369,9 @@ au FileType python  set tabstop=4 |set softtabstop=4 |set shiftwidth=4 |set text
 " light/dark theme — reads ~/.theme-bash-tmux-vim (vtheme bash function)
 function! ApplyTheme()
   let l:t = 'dark'
-  if filereadable(expand('~/.theme-bash-tmux-vim'))
-    let l:t = trim(get(readfile(expand('~/.theme-bash-tmux-vim')), 0, 'dark'))
+  let theme_file = expand('$HOME/.theme-bash-tmux-vim')
+  if filereadable(theme_file)
+    let l:t = trim(get(readfile(theme_file), 0, 'dark'))
   endif
   if l:t ==# 'light'
     set background=light
