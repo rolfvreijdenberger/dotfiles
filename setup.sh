@@ -80,6 +80,9 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
 fi
 install vim/vimrc "$HOME/.vimrc"
 mkdir -p "$HOME/.vim/undodir"
+install pi/settings.json "$HOME/.pi/agent/settings.json"
+install pi/AGENTS.md "$HOME/.pi/agent/AGENTS.md"
+install pi/prompts/explain.md "$HOME/.pi/agent/prompts/explain.md"
 # all scripts in the bin folder
 for i in bin/*; do
   install "$i" "$HOME/bin/$(basename "$i")"

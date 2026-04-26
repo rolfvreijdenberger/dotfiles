@@ -1,0 +1,16 @@
+{
+  "defaultThinkingLevel": "medium",
+  "theme": "dark",
+  "doubleEscapeAction": "tree",
+  "treeFilterMode": "no-tools",
+  "enableInstallTelemetry": false,
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 20000
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  }
+}

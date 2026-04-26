@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Purpose
-Personal Linux dotfiles for Rolf Vreijdenberger. Sets up bash, vim, tmux, git, ssh and gnupg via symlinks from this repo to `$HOME`. Linux-only.
+Personal dotfiles for Rolf Vreijdenberger. `setup.sh` sets up bash, vim, tmux, git, ssh and gnupg via symlinks from this repo to `$HOME` on Linux. `setup.ps1` sets up selected Windows dotfiles for Vim and Pi.
 
 ## Install
 ```bash
@@ -13,17 +13,25 @@ cd ~/dotfiles
 source ~/.bashrc
 ```
 
+Windows selected setup:
+```powershell
+.\setup.ps1
+```
+
 ## File map
 | File | Installs to |
 |---|---|
 | `bash/bash_custom` | `~/.bash_custom` (sourced by `~/.bashrc`) |
 | `git/gitconfig` | `~/.gitconfig` |
-| `vim/vimrc` | `~/.vimrc` |
+| `vim/vimrc` | `~/.vimrc` / `%USERPROFILE%\.vimrc` |
 | `tmux/tmux.conf` | `~/.tmux.conf` |
 | `ssh/config` | `~/.ssh/config` |
 | `ssh/authorized_keys` | appended to `~/.ssh/authorized_keys` |
 | `gnupg/*` | `~/.gnupg/` |
 | `bin/*` | `~/bin/` |
+| `pi/settings.json` | `~/.pi/agent/settings.json` / `%USERPROFILE%\.pi\agent\settings.json` |
+| `pi/AGENTS.md` | `~/.pi/agent/AGENTS.md` / `%USERPROFILE%\.pi\agent\AGENTS.md` |
+| `pi/prompts/` | `~/.pi/agent/prompts/` / `%USERPROFILE%\.pi\agent\prompts\` |
 
 ## Key conventions
 - **Leader key in vim**: `\` (backslash), with space as alias
@@ -31,6 +39,8 @@ source ~/.bashrc
 - **Functions are prefixed with `v`**: `vhelp`, `vinstall`, `vstatus`, `vsetupmotd`, `vman`, `vtheme`, `vbs`
 - **Plugin managers**: vim-plug (vim), TPM (tmux) — both auto-install on first run
 - **setup.sh is idempotent**: safe to re-run after `git pull`
+- **Pi global config**: managed from `pi/`; sessions, auth, package installs and caches are intentionally not tracked
+- **Windows setup**: `setup.ps1` installs Vim/Pi when missing if `winget`/`npm` are available, links Vim and Pi files/directories, falls back to copying if symlinks are unavailable, and backs up existing real files before replacing them
 
 ## bash_custom functions
 | Function | Purpose |
