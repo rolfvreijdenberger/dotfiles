@@ -80,6 +80,15 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
 fi
 install vim/vimrc "$HOME/.vimrc"
 mkdir -p "$HOME/.vim/undodir"
+install pi/settings.json "$HOME/.pi/agent/settings.json"
+install pi/AGENTS.md "$HOME/.pi/agent/AGENTS.md"
+install pi/prompts/explain.md "$HOME/.pi/agent/prompts/explain.md"
+for theme in pi/agent/themes/*; do
+  [ -f "$theme" ] && install "$theme" "$HOME/.pi/agent/themes/$(basename "$theme")"
+done
+for ext in pi/agent/extensions/*; do
+  [ -f "$ext" ] && install "$ext" "$HOME/.pi/agent/extensions/$(basename "$ext")"
+done
 # all scripts in the bin folder
 for i in bin/*; do
   install "$i" "$HOME/bin/$(basename "$i")"

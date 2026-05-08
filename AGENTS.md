@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents when working with code in this repository.
 
 ## Purpose
 Personal Linux dotfiles for Rolf Vreijdenberger. Sets up bash, vim, tmux, git, ssh and gnupg via symlinks from this repo to `$HOME`. Linux-only.
@@ -24,6 +24,11 @@ source ~/.bashrc
 | `ssh/authorized_keys` | appended to `~/.ssh/authorized_keys` |
 | `gnupg/*` | `~/.gnupg/` |
 | `bin/*` | `~/bin/` |
+| `pi/settings.json` | `~/.pi/agent/settings.json` |
+| `pi/AGENTS.md` | `~/.pi/agent/AGENTS.md` |
+| `pi/prompts/` | `~/.pi/agent/prompts/` |
+| `pi/agent/extensions/` | `~/.pi/agent/extensions/` |
+| `pi/agent/themes/` | `~/.pi/agent/themes/` |
 
 ## Key conventions
 - **Leader key in vim**: `\` (backslash), with space as alias
@@ -100,4 +105,4 @@ PHP (php/phpcs/phpmd), Python (flake8), JS/TS (eslint/tsserver), YAML (yamllint)
 - Do not add comments that restate what the code does
 - Keep vhelp entries short — no long parenthetical explanations
 - Commit messages should be high-level, not line-by-line changelogs
-- Always commit with `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`
+
