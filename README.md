@@ -1,3 +1,4 @@
-# dotfiles
-# license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
-personal dotfiles repository
+### dotfiles
+* personal dotfiles repository
+* license: https://github.com/rolfvreijdenberger/dotfiles/LICENSE
+
