@@ -197,10 +197,19 @@ export default function (pi: ExtensionAPI) {
 		thinkingLevel = pi.getThinkingLevel();
 		sessionStartTime = 0;
 		compactionCount = 0;
-		// Footer re-installs itself on session_start if enabled
-		if (footerEnabled) installFooter(ctx);
-		// Header re-installs itself on session_start if enabled
-		if (headerInstalled) installHeader(ctx);
+
+		// Auto-enable if poison-snake theme is active
+		const themeOn = ctx.ui.theme?.name === "poison-snake";
+		if (themeOn) {
+			if (!footerEnabled) {
+				footerEnabled = true;
+				installFooter(ctx);
+			}
+			if (!headerInstalled) {
+				headerInstalled = true;
+				installHeader(ctx);
+			}
+		}
 	});
 
 	// ── Footer install ──────────────────────────────────────────────
