@@ -369,8 +369,16 @@ export default function (pi: ExtensionAPI) {
 					];
 					const status: string[] = [];
 					const themeOn = ctx.ui.theme?.name === "poison-snake";
-					if (themeOn) status.push(theme.fg("success", "  🐍 theme: active"));
-					if (footerEnabled) status.push(theme.fg("accent", "  📊 footer: active"));
+					if (themeOn) {
+						status.push(theme.fg("success", "  🐍 theme: active"));
+					} else {
+						status.push(theme.fg("dim", "  🦴 theme: inactive"));
+					}
+					if (footerEnabled) {
+						status.push(theme.fg("success", "  🐍 footer: active"));
+					} else {
+						status.push(theme.fg("dim", "  🦴 footer: inactive"));
+					}
 					if (!themeOn && !footerEnabled) {
 						status.push(theme.fg("dim", "  (use /poison-snake to activate)"));
 					}
